@@ -1,0 +1,12 @@
+{
+
+    "guacamoleVersion" : "0.9.12-incubating",
+
+    "name"      : "Guacamole Connection Tester",
+    "namespace" : "conntest",
+
+    "authProviders" : [
+        "org.apache.guacamole.conntest.ConnectionTestingAuthenticationProvider"
+    ]
+
+}
