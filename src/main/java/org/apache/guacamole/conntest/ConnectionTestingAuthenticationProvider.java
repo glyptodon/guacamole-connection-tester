@@ -22,6 +22,7 @@ package org.apache.guacamole.conntest;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.conntest.rest.RootResource;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Credentials;
@@ -98,6 +99,11 @@ public class ConnectionTestingAuthenticationProvider implements AuthenticationPr
         // This extension does not perform authentication
         return context;
 
+    }
+
+    @Override
+    public Object getResource() throws GuacamoleException {
+        return injector.getInstance(RootResource.class);
     }
 
 }

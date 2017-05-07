@@ -21,6 +21,7 @@ package org.apache.guacamole.conntest;
 
 import com.google.inject.AbstractModule;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.conntest.rest.RootResource;
 import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.environment.LocalEnvironment;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
@@ -71,7 +72,8 @@ public class ConnectionTestingAuthenticationProviderModule extends AbstractModul
         bind(AuthenticationProvider.class).toInstance(authProvider);
         bind(Environment.class).toInstance(environment);
 
-        // TODO: Bind connection testing services
+        // Bind connection testing REST resources
+        bind(RootResource.class);
 
     }
 
