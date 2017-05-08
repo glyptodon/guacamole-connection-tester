@@ -9,6 +9,10 @@
         "org.apache.guacamole.conntest.ConnectionTestingAuthenticationProvider"
     ],
 
+    "css" : [
+        "styles/connectionTester.css"
+    ],
+
     "js" : [
         "conntestModule.js",
         "controllers/connectionTesterController.js",
