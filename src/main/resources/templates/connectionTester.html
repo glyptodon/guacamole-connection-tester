@@ -1,6 +1,13 @@
 <div class="connection-tester-report">
 
-    <!-- FIXME: STUB -->
-    <p>{{test}}</p>
+    <h1>Guacamole Connection Tester</h1>
+
+    <h2>RTT</h2>
+    <p>{{rtt}}ms</p>
+
+    <h2>Servers</h2>
+    <ol>
+        <li ng-repeat="server in servers">{{server}}</li>
+    </ol>
 
 </div>

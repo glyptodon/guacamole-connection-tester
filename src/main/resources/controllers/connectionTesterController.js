@@ -20,10 +20,29 @@
 /**
  * Controller for the Guacamole connection tester report.
  */
-angular.module('guacConntest').controller('connectionTesterController', ['$scope',
-    function connectionTesterController($scope) {
+angular.module('guacConntest').controller('connectionTesterController', ['$scope', '$injector',
+    function connectionTesterController($scope, $injector) {
 
-    // FIXME: STUB
-    $scope.test = 'This is a test.';
+    // Required services
+    var $http = $injector.get('$http');
+
+    // Attempt to retrieve server list
+    $http({
+        method  : 'GET',
+        url     : 'api/ext/conntest/servers',
+    })
+    .success(function receivedServerList(servers) {
+        $scope.servers = servers;
+    });
+
+    // Attempt to determine round-trip time
+    $http({
+        method  : 'GET',
+        url     : 'api/ext/conntest/time',
+        params  : { 'timestamp' : new Date().getTime() }
+    })
+    .success(function receivedTimestamps(timestamps) {
+        $scope.rtt = new Date().getTime() - timestamps.clientTimestamp;
+    });
 
 }]);
