@@ -9,8 +9,14 @@
         "org.apache.guacamole.conntest.ConnectionTestingAuthenticationProvider"
     ],
 
+    "js" : [
+        "conntestModule.js",
+        "controllers/connectionTesterController.js",
+        "config/connectionTesterRouteConfig.js"
+    ],
+
     "resources" : {
-        "index.html" : "text/html"
+        "templates/connectionTester.html" : "text/html"
     }
 
 }

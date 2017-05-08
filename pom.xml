@@ -119,6 +119,7 @@
                     <excludes>
                         <exclude>**/*.json</exclude>
                         <exclude>src/licenses/**/*</exclude>
+                        <exclude>src/main/resources/templates/*.html</exclude>
                     </excludes>
                 </configuration>
 
