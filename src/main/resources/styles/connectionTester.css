@@ -37,3 +37,19 @@
 .connection-tester .connection-tester-report table.results td {
     padding: 0.5em 1em;
 }
+
+.connection-tester .connection-tester-report table.results tr.quality0 {
+    background: rgba(64, 192, 0, 0.5);
+}
+
+.connection-tester .connection-tester-report table.results tr.quality1 {
+    background: rgba(192, 192, 0, 0.5);
+}
+
+.connection-tester .connection-tester-report table.results tr.quality2 {
+    background: rgba(192, 128, 0, 0.5);
+}
+
+.connection-tester .connection-tester-report table.results tr.quality3 {
+    background: rgba(192, 0, 0, 0.5);
+}

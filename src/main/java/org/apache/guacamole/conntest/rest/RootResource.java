@@ -75,14 +75,14 @@ public class RootResource {
      */
     @GET
     @Path("servers")
-    public List<String> getServerURLs() {
+    public List<Server> getServerURLs() {
 
         // FIXME: STUB
         return Arrays.asList(
-            "http://localhost:8080/guacamole/",
-            "https://guacamole.example.org/",
-            "https://guacamole.example.net/",
-            "https://other.example.org/guacamole/"
+            new Server("http://localhost:8080/guacamole/"),
+            new Server("https://guacamole.example.org/"),
+            new Server("https://guacamole.example.net/"),
+            new Server("https://other.example.org/guacamole/")
         );
 
     }

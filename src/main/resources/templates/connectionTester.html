@@ -12,10 +12,17 @@
             </tr>
         </thead>
         <tbody>
-            <tr ng-repeat="server in servers">
+            <tr ng-class="'quality' + result.niceness" ng-repeat="result in results | orderBy: [
+                    'niceness',
+                    'roundTripStatistics.average',
+                    'roundTripStatistics.standardDeviation'
+                ]">
                 <td class="server-location"><img class="flag-icon" src="app/ext/conntest/flags/US.png" alt="US"/> San Francisco</td>
-                <td class="server-url"><a ng-href="{{server}}">{{server}}</a></td>
-                <td class="server-rtt">{{rtt}}ms</td>
+                <td class="server-url"><a ng-href="{{result.server.url}}">{{result.server.url}}</a></td>
+                <td class="server-rtt">
+                      {{result.roundTripStatistics.average | number: 0}} ms
+                    ± {{result.roundTripStatistics.standardDeviation | number: 0}}
+                </td>
             </tr>
         </tbody>
     </table>

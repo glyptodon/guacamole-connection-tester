@@ -24,25 +24,108 @@ angular.module('guacConntest').controller('connectionTesterController', ['$scope
     function connectionTesterController($scope, $injector) {
 
     // Required services
-    var $http = $injector.get('$http');
+    var connectionTestService         = $injector.get('connectionTestService');
+    var statisticalMeasurementService = $injector.get('statisticalMeasurementService');
 
-    // Attempt to retrieve server list
-    $http({
-        method  : 'GET',
-        url     : 'api/ext/conntest/servers',
-    })
+    // Required types
+    var Result = $injector.get('Result');
+
+    /**
+     * The number of bins to split servers into based on approximate subjective
+     * connection quality.
+     *
+     * @constant
+     * @type Number
+     */
+    var NICENESS_BINS = 4;
+
+    /**
+     * The subjectively-worst possible round trip time for a Guacamole
+     * connection while still being usable. Connections that are noticeably
+     * worse than this value will be virtually unusable.
+     *
+     * @constant
+     * @type Number
+     */
+    var WORST_TOLERABLE_LATENCY = 150;
+
+    $scope.results = [];
+
+    /**
+     * Returns an arbitrary niceness value indicating how subjectively good a
+     * Guacamole connection is likely to be based on the given statistics,
+     * where zero is the best possible connection, and higher values represent
+     * progressively worse connections, with the worst possible value being
+     * NICENESS_BINS - 1.
+     *
+     * @param {Statistics} stats
+     *     The server round trip statistics to use to calculate the arbitrary
+     *     niceness value.
+     *
+     * @returns {Number}
+     *     An arbitrary niceness value indicating how subjectively good a
+     *     Guacamole connection is likely to be based on the given statistics,
+     *     where zero is the best possible connection, and higher values
+     *     represent progressively worse connections.
+     */
+    var getNiceness = function getNiceness(stats) {
+
+        // Remap expected round trip time to a logarithmic scale from 0 to 1,
+        // where 1 represents the worst tolerable latency for a Guacamole
+        // connection, taking inaccuracy into account
+        var logarithmicRTT = Math.log2((stats.average + stats.standardDeviation) / WORST_TOLERABLE_LATENCY + 1);
+
+        // Map logarithmically-scaled RTT onto integer bins, where 0 is the
+        // subjectively best possible connection and higher values are
+        // subjectively worse
+        return Math.min(NICENESS_BINS - 1, Math.floor(logarithmicRTT * NICENESS_BINS));
+
+    };
+
+    /**
+     * Sequentially tests each server in the given array. Only one server at a
+     * time is tested.
+     *
+     * NOTE: This function will modify the given array, removing servers from
+     * the array while the tests are performed. It is unsafe to continue to use
+     * the array after this function has been invoked.
+     *
+     * @param {Server[]} servers
+     *     An array of all servers to test. This array will be gradually
+     *     emptied by this function as tests are performed.
+     */
+    var testServers = function testServers(servers) {
+
+        // Pull next server from array
+        var server = servers.pop();
+        if (!server)
+            return;
+
+        // Measure round trip statistics for current server
+        statisticalMeasurementService.getRoundTripStatistics(server.url)
+        .then(function roundTripTimeMeasured(stats) {
+
+            // Add server test result
+            $scope.results.push(new Result({
+                'server'              : server,
+                'niceness'            : getNiceness(stats),
+                'roundTripStatistics' : stats
+            }));
+
+            // Test all remaining servers
+            testServers(servers);
+
+        });
+
+    };
+
+    // Test all servers once the server list has been retrieved
+    connectionTestService.getServers()
     .success(function receivedServerList(servers) {
-        $scope.servers = servers;
-    });
 
-    // Attempt to determine round-trip time
-    $http({
-        method  : 'GET',
-        url     : 'api/ext/conntest/time',
-        params  : { 'timestamp' : new Date().getTime() }
-    })
-    .success(function receivedTimestamps(timestamps) {
-        $scope.rtt = new Date().getTime() - timestamps.clientTimestamp;
+        // Perform test against a copy of the servers array
+        testServers(servers.slice());
+
     });
 
 }]);
