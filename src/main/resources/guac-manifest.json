@@ -10,13 +10,11 @@
     ],
 
     "css" : [
-        "styles/connectionTester.css"
+        "conntest.min.css"
     ],
 
     "js" : [
-        "conntestModule.js",
-        "controllers/connectionTesterController.js",
-        "config/connectionTesterRouteConfig.js"
+        "conntest.min.js"
     ],
 
     "resources" : {
