@@ -17,11 +17,23 @@
  * under the License.
  */
 
-.connection-tester .connection-tester-report {
+.connection-tester .connection-tester-report .server-location img.flag-icon {
+    max-width: 2em;
+    max-height: 1em;
+}
 
-    /* STUB */
-    border: 1px solid black;
-    padding: 1em;
-    margin: 1em;
+.connection-tester .connection-tester-report .server-url {
+    font-family: monospace;
+    white-space: nowrap;
+    text-overflow: ellipses;
+}
 
+.connection-tester .connection-tester-report table.results {
+    margin: 1em auto;
+    border-collapse: collapse;
+}
+
+.connection-tester .connection-tester-report table.results th,
+.connection-tester .connection-tester-report table.results td {
+    padding: 0.5em 1em;
 }

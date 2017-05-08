@@ -2,12 +2,22 @@
 
     <h1>Guacamole Connection Tester</h1>
 
-    <h2>RTT</h2>
-    <p>{{rtt}}ms</p>
-
-    <h2>Servers</h2>
-    <ol>
-        <li ng-repeat="server in servers">{{server}}</li>
-    </ol>
+    <!-- Connection testing results -->
+    <table class="results">
+        <thead>
+            <tr>
+                <th>Location</th>
+                <th>URL</th>
+                <th>Result</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="server in servers">
+                <td class="server-location"><img class="flag-icon" src="app/ext/conntest/flags/US.png" alt="US"/> San Francisco</td>
+                <td class="server-url"><a ng-href="{{server}}">{{server}}</a></td>
+                <td class="server-rtt">{{rtt}}ms</td>
+            </tr>
+        </tbody>
+    </table>
 
 </div>
