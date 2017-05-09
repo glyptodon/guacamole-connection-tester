@@ -41,13 +41,13 @@ angular.module('guacConntest').controller('connectionTesterController', ['$scope
 
     /**
      * The subjectively-worst possible round trip time for a Guacamole
-     * connection while still being usable. Connections that are noticeably
-     * worse than this value will be virtually unusable.
+     * connection while still being usable, in milliseconds. Connections that
+     * are worse than this value will be virtually unusable.
      *
      * @constant
      * @type Number
      */
-    var WORST_TOLERABLE_LATENCY = 150;
+    var WORST_TOLERABLE_LATENCY = 220;
 
     /**
      * Array of all final server test results.
