@@ -23,57 +23,66 @@
 angular.module('guacConntest').factory('Statistics', [function defineStatistics() {
 
     /**
-     * Returns the average value of all samples in the given set.
+     * Comparator for the standard JavaScript sort() function which sorts
+     * values numerically and in ascending order.
+     */
+    var numericComparator = function numericComparator(a, b) {
+        return a - b;
+    };
+
+    /**
+     * Returns the median value of all samples in the given set. The sample
+     * array MUST already be sorted.
      *
      * @param {Number[]} samples
-     *     An array of samples for which the average should be calculated.
+     *     A sorted array of samples for which the median should be calculated.
      *
      * @returns {Number}
-     *     The average taken across all given samples.
+     *     The median taken across all given samples.
      */
-    var getAverage = function getAverage(samples) {
+    var getMedian = function getMedian(samples) {
 
-        // The average of zero samples is zero
-        if (samples.length === 0)
+        // The median of zero samples is zero
+        var length = samples.length;
+        if (length === 0)
             return 0;
 
-        // Calculate total of all sample values
-        var total = 0;
-        for (var i = 0; i < samples.length; i++)
-            total += samples[i];
+        // Return middle value if there are an odd number of samples
+        if (length % 2 === 1)
+            return samples[(length - 1) / 2];
 
-        // Return average value
-        return total / samples.length;
+        // Otherwise return average of the two middle samples
+        return (samples[length / 2 - 1] + samples[length / 2]) / 2;
 
     };
 
     /**
-     * Returns the variance across all given samples. The variance is the
-     * average squared deviation of each sample from the average value of the
-     * set.
+     * Returns the median absolute deviation across all given samples relative
+     * to a given value.
      *
      * @param {Number[]} samples
-     *     An array of samples for which the variance should be calculated.
+     *     An array of samples for which the median absolute deviation should
+     *     be calculated.
      *
-     * @param {Number} average
-     *     The average value for samples within the given set.
+     * @param {Number} value
+     *     The value that each sample should be compared against to determine
+     *     the absolute deviation for that sample.
      *
      * @returns {Number}
-     *     The variance across all given samples.
+     *     The median absolute deviation across all given samples.
      */
-    var getVariance = function getVariance(samples, average) {
+    var getMedianAbsoluteDeviation = function getMedianAbsoluteDeviation(samples, value) {
 
-        // The variance of zero samples is zero
-        if (samples.length === 0)
-            return 0;
-
-        // Calculate total squared deviation across all sample values
-        var total = 0;
+        // Build list of absolute deviations for all samples
+        var absoluteDeviations = [];
         for (var i = 0; i < samples.length; i++)
-            total += Math.pow(samples[i] - average, 2);
+            absoluteDeviations.push(Math.abs(samples[i] - value));
 
-        // Return average squared deviation (variance)
-        return total / samples.length;
+        // Sort values prior to calculating median
+        absoluteDeviations.sort(numericComparator);
+
+        // Return median absolute deviation
+        return getMedian(absoluteDeviations);
 
     };
 
@@ -88,33 +97,26 @@ angular.module('guacConntest').factory('Statistics', [function defineStatistics(
     var Statistics = function Statistics(samples) {
 
         /**
-         * A reference to the sample array provided at construction time.
+         * A sorted copy of the array of samples provided at construction time.
          *
          * @type Number[]
          */
-        this.samples = samples;
+        this.samples = samples.slice().sort(numericComparator);
 
         /**
-         * The average value of all given samples.
+         * The median of all given samples.
          *
          * @type Number
          */
-        this.average = getAverage(samples);
+        this.median = getMedian(this.samples);
 
         /**
-         * The variance of all given samples relative to the average.
+         * The median absolute deviation of all given samples relative to the
+         * median.
          *
          * @type Number
          */
-        this.variance = getVariance(samples, this.average);
-
-        /**
-         * The standard deviation of all given samples relative to the average.
-         * This value is equal to the square root of the variance.
-         *
-         * @type Number
-         */
-        this.standardDeviation = Math.sqrt(this.variance);
+        this.medianAbsoluteDeviation = getMedianAbsoluteDeviation(this.samples, this.median);
 
     };
 

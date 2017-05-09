@@ -48,15 +48,6 @@ angular.module('guacConntest').factory('statisticalMeasurementService', ['$injec
     var MAX_SAMPLE_TIME = 5000;
 
     /**
-     * The proportion of a series of samples to discard from each end of the
-     * sorted sample array before deriving statistics from its contents.
-     *
-     * @constant
-     * @type Number
-     */
-    var TRUNCATION_PROPORTION = 0.2;
-
-    /**
      * The desired minimum number of samples which should be taken before
      * deriving statistics from those samples. The actual number of samples
      * taken may be smaller if the maximum sampling time is exceeded.
@@ -67,63 +58,24 @@ angular.module('guacConntest').factory('statisticalMeasurementService', ['$injec
     var DESIRED_SAMPLE_SIZE = 5;
 
     /**
-     * The desired ratio for the standard deviation relative to the calculated
-     * average round trip time. If the desired standard deviation is met across
-     * the minimum number of samples, the sampling operation may terminate
-     * prior to reaching the maximum sampling time.
+     * The desired ratio for the median absolute deviation relative to the
+     * calculated median round trip time. If the desired median absolute
+     * deviation is met across the minimum number of samples, the sampling
+     * operation may terminate prior to reaching the maximum sampling time.
      *
      * @constant
      * @type Number
      */
-    var DESIRED_STANDARD_DEVIATION = 0.25;
+    var DESIRED_DEVIATION = 0.25;
 
     var service = {};
 
     /**
-     * Sorts and truncates the given sample array, returning a new sample array
-     * with the same number of samples removed removed from each end. The
-     * number of small/large values removed is proportional to the number of
-     * samples.
-     * 
-     * NOTE: Though the value returned by this function is a new array, this
-     * function sorts the given array in-place while producing that result, and
-     * thus alters the contents of the given array.
-     *
-     * @param {Number[]} samples
-     *     The sample array to truncate. This array may be sorted in-place by
-     *     this function.
-     *
-     * @param {Number[]} proportion
-     *     The proportion of the sample array which should be removed from each
-     *     end.
-     *
-     * @returs {Number[]}
-     *     A new, truncated sample array.
-     */
-    var truncateSamples = function truncateSamples(samples, proportion) {
-
-        // Calculate number of samples to remove
-        var truncateLength = Math.ceil(samples.length * proportion);
-
-        // Do nothing if we are not truncating, or if truncating the array
-        // would remove all samples
-        if (truncateLength <= 0 || samples.length <= truncateLength * 2)
-            return samples;
-
-        // Sort the array, removing an equal number of samples from beginning
-        // and end
-        samples = samples.sort().slice(truncateLength, -truncateLength);
-
-        return samples;
-
-    };
-
-    /**
      * Returns the approximate amount of time required to improve upon the
      * given statistics through collecting additional samples. The amount of
-     * time required is estimated based on the current average round trip time
-     * and the desired standard deviation (which itself is proportionate to the
-     * average round trip time).
+     * time required is estimated based on the current median round trip time
+     * and the desired absolute median deviation (which itself is proportionate
+     * to the median round trip time).
      *
      * @param {Statistics} stats
      *     The current round trip time statistics.
@@ -140,22 +92,37 @@ angular.module('guacConntest').factory('statisticalMeasurementService', ['$injec
         if (stats.samples.length < DESIRED_SAMPLE_SIZE)
             return 0;
 
-        // Calculate the variance which would be considered accurate for the
+        // Calculate the deviation which would be considered accurate for the
         // current sample set
-        var desiredVariance = Math.pow(stats.average * DESIRED_STANDARD_DEVIATION, 2);
+        var desiredDeviation = Math.abs(stats.median * DESIRED_DEVIATION);
 
-        // Calculate the number of additional ideal samples which would be
-        // required to achieve that variance
-        var requiredSamples = (stats.variance - desiredVariance)
-                    * stats.samples.length / desiredVariance;
+        // Determine how much time is likely required to improve the estimate
+        // by simulating future samples
+        var simulatedSamples = stats.samples.slice();
+        do {
+
+            // If the current set of simulated samples already meets the
+            // criteria, then we're done
+            var simulatedStats = new Statistics(simulatedSamples);
+            if (simulatedStats.medianAbsoluteDeviation <= desiredDeviation)
+                break;
+
+            // Otherwise, simulate receipt of a perfect sample
+            simulatedSamples.push(stats.median);
+
+        } while (simulatedSamples.length < stats.samples.length * 2);
+
+        // Calculate the number of additional samples added through the
+        // above simulation
+        var requiredSamples = simulatedSamples.length - stats.samples.length;
 
         // If the sample set is already accurate, there's no need to improve
         // anything
-        if (requiredSamples < 0)
+        if (requiredSamples === 0)
             return Number.POSITIVE_INFINITY;
 
         // Determine the amount of time required to gather enough samples
-        return requiredSamples * stats.average;
+        return requiredSamples * stats.median;
 
     };
 
@@ -198,7 +165,7 @@ angular.module('guacConntest').factory('statisticalMeasurementService', ['$injec
             samples.push(currentTime - timestamps.clientTimestamp);
 
             // Calculate overall statistics for sample set
-            var stats = new Statistics(truncateSamples(samples, TRUNCATION_PROPORTION));
+            var stats = new Statistics(samples);
 
             // Stop gathering samples if improving the sample set would exceed
             // the maximum time allowed

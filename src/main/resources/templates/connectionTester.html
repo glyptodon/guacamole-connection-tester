@@ -14,8 +14,8 @@
         <tbody>
             <tr ng-class="'quality' + result.niceness" ng-repeat="result in results | orderBy: [
                     'niceness',
-                    'roundTripStatistics.average',
-                    'roundTripStatistics.standardDeviation'
+                    'roundTripStatistics.median',
+                    'roundTripStatistics.medianAbsoluteDeviation'
                 ]">
                 <td class="server-location">
                     <img class="flag-icon" ng-show="result.server.country"
@@ -28,8 +28,8 @@
 
                     <!-- Round trip time statistics (if server is available) -->
                     <span ng-show="result.roundTripStatistics">
-                          {{result.roundTripStatistics.average | number: 0}} ms
-                        ± {{result.roundTripStatistics.standardDeviation | number: 0}}
+                          {{result.roundTripStatistics.median | number: 0}} ms
+                        ± {{result.roundTripStatistics.medianAbsoluteDeviation | number: 0}}
                     </span>
 
                     <!-- Server unavailable warning -->
