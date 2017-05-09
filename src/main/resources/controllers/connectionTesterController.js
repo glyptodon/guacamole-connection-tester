@@ -78,7 +78,7 @@ angular.module('guacConntest').controller('connectionTesterController', ['$scope
         // Remap expected round trip time to a logarithmic scale from 0 to 1,
         // where 1 represents the worst tolerable latency for a Guacamole
         // connection, taking inaccuracy into account
-        var logarithmicRTT = Math.log2((stats.average + stats.standardDeviation) / WORST_TOLERABLE_LATENCY + 1);
+        var logarithmicRTT = Math.log((stats.average + stats.standardDeviation) / WORST_TOLERABLE_LATENCY + 1) / Math.LN2;
 
         // Map logarithmically-scaled RTT onto integer bins, where 0 is the
         // subjectively best possible connection and higher values are
