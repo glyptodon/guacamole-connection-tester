@@ -58,8 +58,8 @@ angular.module('guacConntest').factory('statisticalMeasurementService', ['$injec
     var DESIRED_SAMPLE_SIZE = 5;
 
     /**
-     * The desired ratio for the median absolute deviation relative to the
-     * calculated median round trip time. If the desired median absolute
+     * The desired ratio for the mean absolute deviation relative to the
+     * calculated median round trip time. If the desired mean absolute
      * deviation is met across the minimum number of samples, the sampling
      * operation may terminate prior to reaching the maximum sampling time.
      *
@@ -91,9 +91,9 @@ angular.module('guacConntest').factory('statisticalMeasurementService', ['$injec
         // current sample set
         var desiredDeviation = Math.abs(stats.median * DESIRED_DEVIATION);
 
-        // The sample set is accurate if we have achieved the minimum
-        // desired deviation
-        return stats.medianAbsoluteDeviation <= desiredDeviation;
+        // The sample set is accurate if the overall set appears to be within
+        // the minimum desired deviation
+        return stats.meanAbsoluteDeviation <= desiredDeviation;
 
     };
 
