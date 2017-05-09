@@ -54,7 +54,7 @@ angular.module('guacConntest').factory('statisticalMeasurementService', ['$injec
      * @constant
      * @type Number
      */
-    var TRUNCATION_PROPORTION = 0.1;
+    var TRUNCATION_PROPORTION = 0.4;
 
     /**
      * The desired minimum number of samples which should be taken before
