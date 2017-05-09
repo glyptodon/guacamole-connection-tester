@@ -49,6 +49,11 @@ angular.module('guacConntest').controller('connectionTesterController', ['$scope
      */
     var WORST_TOLERABLE_LATENCY = 150;
 
+    /**
+     * Array of all final server test results.
+     *
+     * @type Result[]
+     */
     $scope.results = [];
 
     /**
@@ -88,7 +93,8 @@ angular.module('guacConntest').controller('connectionTesterController', ['$scope
      *
      * NOTE: This function will modify the given array, removing servers from
      * the array while the tests are performed. It is unsafe to continue to use
-     * the array after this function has been invoked.
+     * the array after this function has been invoked except to monitor
+     * progress.
      *
      * @param {Server[]} servers
      *     An array of all servers to test. This array will be gradually
