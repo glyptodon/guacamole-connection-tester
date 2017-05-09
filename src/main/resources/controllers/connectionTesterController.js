@@ -103,7 +103,7 @@ angular.module('guacConntest').controller('connectionTesterController', ['$scope
     var testServers = function testServers(servers) {
 
         // Pull next server from array
-        var server = servers.pop();
+        var server = servers.shift();
         if (!server)
             return;
 
