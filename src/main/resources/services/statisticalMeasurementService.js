@@ -71,58 +71,28 @@ angular.module('guacConntest').factory('statisticalMeasurementService', ['$injec
     var service = {};
 
     /**
-     * Returns the approximate amount of time required to improve upon the
-     * given statistics through collecting additional samples. The amount of
-     * time required is estimated based on the current median round trip time
-     * and the desired absolute median deviation (which itself is proportionate
-     * to the median round trip time).
+     * Returns whether the given statistics can be considered accurate based on
+     * the overall number of samples and deviation between those samples.
      *
      * @param {Statistics} stats
      *     The current round trip time statistics.
      *
-     * @returns {Number}
-     *     The approximate amount of time required to improve upon the given
-     *     statistics, in milliseconds, or Number.POSITIVE_INFINITY if
-     *     improvement is unlikely.
+     * @returns {Boolean}
+     *     true if the given statistics can be considered accurate, false
+     *     otherwise.
      */
-    var getTimeToImprove = function getTimeToImprove(stats) {
+    var isAccurate = function isAccurate(stats) {
 
-        // If we haven't reached the minimum sample size, any additional time
-        // would improve things
+        // Must have at least a certain number of samples to be accurate
         if (stats.samples.length < DESIRED_SAMPLE_SIZE)
-            return 0;
+            return false;
 
         // Calculate the deviation which would be considered accurate for the
         // current sample set
         var desiredDeviation = Math.abs(stats.median * DESIRED_DEVIATION);
 
-        // Determine how much time is likely required to improve the estimate
-        // by simulating future samples
-        var simulatedSamples = stats.samples.slice();
-        do {
-
-            // If the current set of simulated samples already meets the
-            // criteria, then we're done
-            var simulatedStats = new Statistics(simulatedSamples);
-            if (simulatedStats.medianAbsoluteDeviation <= desiredDeviation)
-                break;
-
-            // Otherwise, simulate receipt of a perfect sample
-            simulatedSamples.push(stats.median);
-
-        } while (simulatedSamples.length < stats.samples.length * 2);
-
-        // Calculate the number of additional samples added through the
-        // above simulation
-        var requiredSamples = simulatedSamples.length - stats.samples.length;
-
-        // If the sample set is already accurate, there's no need to improve
-        // anything
-        if (requiredSamples === 0)
-            return Number.POSITIVE_INFINITY;
-
-        // Determine the amount of time required to gather enough samples
-        return requiredSamples * stats.median;
+        // Sample set is accurate if deviation is small enough
+        return stats.medianAbsoluteDeviation <= desiredDeviation;
 
     };
 
@@ -167,9 +137,9 @@ angular.module('guacConntest').factory('statisticalMeasurementService', ['$injec
             // Calculate overall statistics for sample set
             var stats = new Statistics(samples);
 
-            // Stop gathering samples if improving the sample set would exceed
-            // the maximum time allowed
-            if ((currentTime + getTimeToImprove(stats)) - startTime >= MAX_SAMPLING_TIME)
+            // Stop gathering samples if we are exceeding the maximum time
+            // allowed, or the sample set is already accurate enough
+            if (currentTime - startTime >= MAX_SAMPLING_TIME || isAccurate(stats))
                 request.resolve(stats);
 
             // Otherwise, gather more samples
