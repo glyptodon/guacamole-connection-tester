@@ -83,7 +83,7 @@ angular.module('guacConntest').controller('connectionTesterController', ['$scope
         // Map logarithmically-scaled RTT onto integer bins, where 0 is the
         // subjectively best possible connection and higher values are
         // subjectively worse
-        return Math.min(NICENESS_BINS - 1, Math.floor(logarithmicRTT * NICENESS_BINS));
+        return Math.min(NICENESS_BINS - 1, Math.floor(logarithmicRTT * (NICENESS_BINS - 1)));
 
     };
 
