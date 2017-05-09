@@ -23,9 +23,8 @@
 }
 
 .connection-tester .connection-tester-report .server-url {
-    font-family: monospace;
     white-space: nowrap;
-    text-overflow: ellipses;
+    padding-right: 2em;
 }
 
 .connection-tester .connection-tester-report table.results {
@@ -33,28 +32,32 @@
     border-collapse: collapse;
 }
 
+.connection-tester .connection-tester-report table.results thead {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+}
+
 .connection-tester .connection-tester-report table.results th,
 .connection-tester .connection-tester-report table.results td {
     padding: 0.5em 1em;
 }
 
-.connection-tester .connection-tester-report table.results tr.quality0 {
+.connection-tester .connection-tester-report table.results tr.quality0 .server-rtt {
     background: rgba(64, 192, 0, 0.5);
 }
 
-.connection-tester .connection-tester-report table.results tr.quality1 {
+.connection-tester .connection-tester-report table.results tr.quality1 .server-rtt {
     background: rgba(192, 192, 0, 0.5);
 }
 
-.connection-tester .connection-tester-report table.results tr.quality2 {
+.connection-tester .connection-tester-report table.results tr.quality2 .server-rtt {
     background: rgba(192, 128, 0, 0.5);
 }
 
-.connection-tester .connection-tester-report table.results tr.quality3 {
+.connection-tester .connection-tester-report table.results tr.quality3 .server-rtt {
     background: rgba(192, 0, 0, 0.5);
 }
 
-.connection-tester .connection-tester-report table.results tr.quality4 {
+.connection-tester .connection-tester-report table.results tr.quality4 .server-rtt {
     background: black;
     color: white;
 }
