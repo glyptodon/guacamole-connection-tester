@@ -68,17 +68,6 @@ angular.module('guacConntest').factory('statisticalMeasurementService', ['$injec
      */
     var DESIRED_DEVIATION = 0.25;
 
-    /**
-     * The desired probability that the estimate (the median) of the current
-     * sample set will not be substantially affected by an additional sample,
-     * where "substantial" means outside the mean absolute deviation of the
-     * current sample set.
-     *
-     * @constant
-     * @type Number
-     */
-    var DESIRED_CERTAINTY = 0.95;
-
     var service = {};
 
     /**
@@ -102,39 +91,9 @@ angular.module('guacConntest').factory('statisticalMeasurementService', ['$injec
         // current sample set
         var desiredDeviation = Math.abs(stats.median * DESIRED_DEVIATION);
 
-        // The sample set is inaccurate if we haven't achieved the minimum
+        // The sample set is accurate if we have achieved the minimum
         // desired deviation
-        if (stats.medianAbsoluteDeviation > desiredDeviation)
-            return false;
-
-        // Copy the sample array for internal simulations
-        var simulatedSamples = stats.samples.slice();
-
-        // Assuming that future samples will follow the current distribution,
-        // determine the probability that an additional sample will affect the
-        // median beyond the current median absolute deviation
-        var medianAffected = 0;
-        for (var sign = -1; sign <= 1; sign += 2) {
-            for (var i = 0; i < stats.samples.length; i++) {
-
-                // Add simulated sample from actual measured sample set
-                var simulatedSample = stats.samples[i] + stats.medianAbsoluteDeviation * sign;
-                simulatedSamples[stats.samples.length] = simulatedSample;
-
-                // Consider sample set inaccurate if the simulated sample set
-                // deviates from the current estimate by more than expected
-                var simulatedStats = new Statistics(simulatedSamples);
-                if (Math.abs(stats.median - simulatedStats.median) > stats.medianAbsoluteDeviation)
-                    medianAffected++;
-
-            }
-        }
-
-        // Sample set is accurate if we've achieved the minimum desired
-        // deviation AND we are reasonably certain that further similar samples
-        // will not cause the estimate to deviate beyond the deviation of the
-        // current set
-        return (medianAffected / (stats.samples.length * 2)) <= (1 - DESIRED_CERTAINTY);
+        return stats.medianAbsoluteDeviation <= desiredDeviation;
 
     };
 
