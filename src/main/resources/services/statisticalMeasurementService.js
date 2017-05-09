@@ -114,24 +114,27 @@ angular.module('guacConntest').factory('statisticalMeasurementService', ['$injec
         // determine the probability that an additional sample will affect the
         // median beyond the current median absolute deviation
         var medianAffected = 0;
-        for (var i = 0; i < stats.samples.length; i++) {
+        for (var sign = -1; sign <= 1; sign += 2) {
+            for (var i = 0; i < stats.samples.length; i++) {
 
-            // Add simulated sample from actual measured sample set
-            simulatedSamples[stats.samples.length] = stats.samples[i];
+                // Add simulated sample from actual measured sample set
+                var simulatedSample = stats.samples[i] + stats.medianAbsoluteDeviation * sign;
+                simulatedSamples[stats.samples.length] = simulatedSample;
 
-            // Consider sample set inaccurate if the simulated sample set
-            // deviates from the current estimate by more than expected
-            var simulatedStats = new Statistics(simulatedSamples);
-            if (Math.abs(stats.median - simulatedStats.median) > stats.medianAbsoluteDeviation)
-                medianAffected++;
+                // Consider sample set inaccurate if the simulated sample set
+                // deviates from the current estimate by more than expected
+                var simulatedStats = new Statistics(simulatedSamples);
+                if (Math.abs(stats.median - simulatedStats.median) > stats.medianAbsoluteDeviation)
+                    medianAffected++;
 
+            }
         }
 
         // Sample set is accurate if we've achieved the minimum desired
         // deviation AND we are reasonably certain that further similar samples
         // will not cause the estimate to deviate beyond the deviation of the
         // current set
-        return (medianAffected / stats.samples.length) <= (1 - DESIRED_CERTAINTY);
+        return (medianAffected / (stats.samples.length * 2)) <= (1 - DESIRED_CERTAINTY);
 
     };
 
