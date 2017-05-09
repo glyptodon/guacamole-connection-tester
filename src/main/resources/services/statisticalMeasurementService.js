@@ -68,6 +68,16 @@ angular.module('guacConntest').factory('statisticalMeasurementService', ['$injec
      */
     var DESIRED_DEVIATION = 0.25;
 
+    /**
+     * The desired probability that the accuracy of the current sample set will
+     * not be substantially affected by an additional sample, measured through
+     * random trials.
+     *
+     * @constant
+     * @type Number
+     */
+    var DESIRED_CERTAINTY = 0.95;
+
     var service = {};
 
     /**
@@ -96,19 +106,31 @@ angular.module('guacConntest').factory('statisticalMeasurementService', ['$injec
         if (stats.medianAbsoluteDeviation > desiredDeviation)
             return false;
 
-        // Add random samples, producing a simulated sample set twice the
-        // original size
+        // Add random samples chosen from the current sample set
         var simulatedSamples = stats.samples.slice();
-        for (var i = 0; i < stats.samples.length; i++) {
+        var testRuns = Math.floor(1 / (1 - DESIRED_CERTAINTY));
+
+        // Run repeated random sample simulations to re-verify the accuracy
+        // of the measured sample set
+        for (var i = 0; i < testRuns; i++) {
+
             var index = Math.floor(Math.random() * stats.samples.length);
-            simulatedSamples.push(stats.samples[index]);
+            simulatedSamples[stats.samples.length] = stats.samples[index];
+
+            // Consider sample set inaccurate if the simulated sample set
+            // deviates from the current estimate by more than the deviation of
+            // the current set
+            var simulatedStats = new Statistics(simulatedSamples);
+            if (Math.abs(stats.median - simulatedStats.median) > stats.medianAbsoluteDeviation)
+                return false;
+
         }
 
         // Sample set is accurate if we've achieved the minimum desired
-        // deviation AND further similar samples are not likely to change the
-        // estimate beyond the current deviation
-        var simulatedStats = new Statistics(simulatedSamples);
-        return Math.abs(stats.median - simulatedStats.median) <= stats.medianAbsoluteDeviation;
+        // deviation AND we are reasonably certain that further similar samples
+        // will not cause the estimate to deviate beyond the deviation of the
+        // current set
+        return true;
 
     };
 
