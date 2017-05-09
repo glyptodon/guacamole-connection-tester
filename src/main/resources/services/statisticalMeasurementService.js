@@ -91,8 +91,24 @@ angular.module('guacConntest').factory('statisticalMeasurementService', ['$injec
         // current sample set
         var desiredDeviation = Math.abs(stats.median * DESIRED_DEVIATION);
 
-        // Sample set is accurate if deviation is small enough
-        return stats.medianAbsoluteDeviation <= desiredDeviation;
+        // The sample set is inaccurate if we haven't achieved the minimum
+        // desired deviation
+        if (stats.medianAbsoluteDeviation > desiredDeviation)
+            return false;
+
+        // Add random samples, producing a simulated sample set twice the
+        // original size
+        var simulatedSamples = stats.samples.slice();
+        for (var i = 0; i < stats.samples.length; i++) {
+            var index = Math.floor(Math.random() * stats.samples.length);
+            simulatedSamples.push(stats.samples[index]);
+        }
+
+        // Sample set is accurate if we've achieved the minimum desired
+        // deviation AND further similar samples are not likely to change the
+        // estimate beyond the current deviation
+        var simulatedStats = new Statistics(simulatedSamples);
+        return Math.abs(stats.median - simulatedStats.median) <= stats.medianAbsoluteDeviation;
 
     };
 
