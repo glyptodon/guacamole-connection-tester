@@ -103,18 +103,28 @@ angular.module('guacConntest').controller('connectionTesterController', ['$scope
 
         // Measure round trip statistics for current server
         statisticalMeasurementService.getRoundTripStatistics(server.url)
-        .then(function roundTripTimeMeasured(stats) {
 
-            // Add server test result
+        // If successful, add server test result
+        .then(function roundTripTimeMeasured(stats) {
             $scope.results.push(new Result({
                 'server'              : server,
                 'niceness'            : getNiceness(stats),
                 'roundTripStatistics' : stats
             }));
+        })
 
-            // Test all remaining servers
+        // Otherwise, mark server as bad
+        ['catch'](function testRemainingServers() {
+            $scope.results.push(new Result({
+                'server'              : server,
+                'niceness'            : NICENESS_BINS,
+                'roundTripStatistics' : null
+            }));
+        })
+
+        // Test all remaining servers
+        ['finally'](function testRemainingServers() {
             testServers(servers);
-
         });
 
     };

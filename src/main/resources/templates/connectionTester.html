@@ -20,8 +20,16 @@
                 <td class="server-location"><img class="flag-icon" src="app/ext/conntest/flags/US.png" alt="US"/> San Francisco</td>
                 <td class="server-url"><a ng-href="{{result.server.url}}">{{result.server.url}}</a></td>
                 <td class="server-rtt">
-                      {{result.roundTripStatistics.average | number: 0}} ms
-                    ± {{result.roundTripStatistics.standardDeviation | number: 0}}
+
+                    <!-- Round trip time statistics (if server is available) -->
+                    <span ng-show="result.roundTripStatistics">
+                          {{result.roundTripStatistics.average | number: 0}} ms
+                        ± {{result.roundTripStatistics.standardDeviation | number: 0}}
+                    </span>
+
+                    <!-- Server unavailable warning -->
+                    <span ng-hide="result.roundTripStatistics">Unavailable</span>
+
                 </td>
             </tr>
         </tbody>

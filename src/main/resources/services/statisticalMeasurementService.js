@@ -40,6 +40,14 @@ angular.module('guacConntest').factory('statisticalMeasurementService', ['$injec
     var MAX_SAMPLING_TIME = 1000;
 
     /**
+     * The maximum amount of time to spend collecting any individual sample.
+     *
+     * @constant
+     * @type Number
+     */
+    var MAX_SAMPLE_TIME = 5000;
+
+    /**
      * The proportion of a series of samples to discard before deriving
      * statistics from the contents of that series.
      *
@@ -175,7 +183,11 @@ angular.module('guacConntest').factory('statisticalMeasurementService', ['$injec
      */
     var gatherSamples = function gatherSamples(serverUrl, samples, request, startTime) {
 
-        connectionTestService.getTimestamps(serverUrl)
+        // Ping the Guacamole server
+        connectionTestService.getTimestamps(serverUrl, MAX_SAMPLE_TIME)
+
+        // If the ping was successful, update the statistics, possibly pinging
+        // the server again
         .success(function timestampsReceived(timestamps) {
 
             var currentTime = new Date().getTime();
@@ -195,6 +207,11 @@ angular.module('guacConntest').factory('statisticalMeasurementService', ['$injec
             else
                 gatherSamples(serverUrl, samples, request, startTime);
 
+        })
+
+        // If the ping failed, abort and reject the promise
+        .error(function testFailed() {
+            request.reject();
         });
 
         return request.promise;

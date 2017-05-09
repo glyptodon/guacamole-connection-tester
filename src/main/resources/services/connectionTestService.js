@@ -54,15 +54,20 @@ angular.module('guacConntest').factory('connectionTestService', ['$injector',
      * @param {String} serverUrl
      *     The base URL of the Guacamole server to test.
      *
+     * @param {Number} [timeout]
+     *     The maximum amount of time to allow for the request, in
+     *     milliseconds. If omitted, the request will never timeout.
+     *
      * @returns {Promise.<TimestampPair>}
      *     A promise which will resolve with a @link{TimestampPair} object,
      *     describing both the server time when the request was serviced and
      *     the client time when the request was made.
      */
-    service.getTimestamps = function getTimestamps(serverUrl) {
+    service.getTimestamps = function getTimestamps(serverUrl, timeout) {
         return $http({
             method  : 'GET',
-            url     : 'api/ext/conntest/time',
+            url     : serverUrl + '/api/ext/conntest/time',
+            timeout : timeout,
             params  : { 'timestamp' : new Date().getTime() }
         });
     };
