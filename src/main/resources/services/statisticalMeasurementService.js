@@ -48,13 +48,13 @@ angular.module('guacConntest').factory('statisticalMeasurementService', ['$injec
     var MAX_SAMPLE_TIME = 5000;
 
     /**
-     * The proportion of a series of samples to discard before deriving
-     * statistics from the contents of that series.
+     * The proportion of a series of samples to discard from each end of the
+     * sorted sample array before deriving statistics from its contents.
      *
      * @constant
      * @type Number
      */
-    var TRUNCATION_PROPORTION = 0.4;
+    var TRUNCATION_PROPORTION = 0.2;
 
     /**
      * The desired minimum number of samples which should be taken before
@@ -80,9 +80,10 @@ angular.module('guacConntest').factory('statisticalMeasurementService', ['$injec
     var service = {};
 
     /**
-     * Truncates the given sample array, returning a new sample array with
-     * the smallest and largest values removed. The number of small/large
-     * values removed is proportional to the number of samples.
+     * Sorts and truncates the given sample array, returning a new sample array
+     * with the same number of samples removed removed from each end. The
+     * number of small/large values removed is proportional to the number of
+     * samples.
      * 
      * NOTE: Though the value returned by this function is a new array, this
      * function sorts the given array in-place while producing that result, and
@@ -93,7 +94,8 @@ angular.module('guacConntest').factory('statisticalMeasurementService', ['$injec
      *     this function.
      *
      * @param {Number[]} proportion
-     *     The proportion of the sample array which should be removed.
+     *     The proportion of the sample array which should be removed from each
+     *     end.
      *
      * @returs {Number[]}
      *     A new, truncated sample array.
@@ -101,7 +103,7 @@ angular.module('guacConntest').factory('statisticalMeasurementService', ['$injec
     var truncateSamples = function truncateSamples(samples, proportion) {
 
         // Calculate number of samples to remove
-        var truncateLength = Math.ceil(samples.length * proportion / 2);
+        var truncateLength = Math.ceil(samples.length * proportion);
 
         // Do nothing if we are not truncating, or if truncating the array
         // would remove all samples
