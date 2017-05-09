@@ -69,9 +69,10 @@ angular.module('guacConntest').factory('statisticalMeasurementService', ['$injec
     var DESIRED_DEVIATION = 0.25;
 
     /**
-     * The desired probability that the accuracy of the current sample set will
-     * not be substantially affected by an additional sample, measured through
-     * random trials.
+     * The desired probability that the estimate (the median) of the current
+     * sample set will not be substantially affected by an additional sample,
+     * where "substantial" means outside the mean absolute deviation of the
+     * current sample set.
      *
      * @constant
      * @type Number
@@ -106,23 +107,23 @@ angular.module('guacConntest').factory('statisticalMeasurementService', ['$injec
         if (stats.medianAbsoluteDeviation > desiredDeviation)
             return false;
 
-        // Add random samples chosen from the current sample set
+        // Copy the sample array for internal simulations
         var simulatedSamples = stats.samples.slice();
-        var testRuns = Math.floor(1 / (1 - DESIRED_CERTAINTY));
 
-        // Run repeated random sample simulations to re-verify the accuracy
-        // of the measured sample set
-        for (var i = 0; i < testRuns; i++) {
+        // Assuming that future samples will follow the current distribution,
+        // determine the probability that an additional sample will affect the
+        // median beyond the current median absolute deviation
+        var medianAffected = 0;
+        for (var i = 0; i < stats.samples.length; i++) {
 
-            var index = Math.floor(Math.random() * stats.samples.length);
-            simulatedSamples[stats.samples.length] = stats.samples[index];
+            // Add simulated sample from actual measured sample set
+            simulatedSamples[stats.samples.length] = stats.samples[i];
 
             // Consider sample set inaccurate if the simulated sample set
-            // deviates from the current estimate by more than the deviation of
-            // the current set
+            // deviates from the current estimate by more than expected
             var simulatedStats = new Statistics(simulatedSamples);
             if (Math.abs(stats.median - simulatedStats.median) > stats.medianAbsoluteDeviation)
-                return false;
+                medianAffected++;
 
         }
 
@@ -130,7 +131,7 @@ angular.module('guacConntest').factory('statisticalMeasurementService', ['$injec
         // deviation AND we are reasonably certain that further similar samples
         // will not cause the estimate to deviate beyond the deviation of the
         // current set
-        return true;
+        return (medianAffected / stats.samples.length) <= (1 - DESIRED_CERTAINTY);
 
     };
 
