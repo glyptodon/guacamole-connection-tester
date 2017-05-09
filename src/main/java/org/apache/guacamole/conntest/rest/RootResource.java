@@ -26,6 +26,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 /**
  * The root-level resource of the Guacamole connection testing extension.
@@ -47,22 +48,32 @@ public class RootResource {
     }
 
     /**
-     * Returns the current server time when this request was serviced and, if
-     * provided, the current client time when this request was made. Both
-     * timestamps are given in the number of milliseconds since midnight of
-     * January 1, 1970, UTC.
+     * Returns a response containing the current server time when this request
+     * was serviced and, if provided, the current client time when this request
+     * was made. Both timestamps are given in the number of milliseconds since
+     * midnight of January 1, 1970, UTC.
+     *
+     * CORS headers are set on the response to allow all origins to ping the
+     * timestamp service.
      *
      * @param timestamp
      *     The current client time in milliseconds since midnight of January 1,
      *     1970, UTC, or null if only the server time is desired.
      *
      * @return
-     *     The current server time and, if provided, the current client time.
+     *     A response containing the current server time and, if provided, the
+     *     current client time.
      */
     @GET
     @Path("time")
-    public TimestampPair getTimestamp(@QueryParam("timestamp") Long timestamp) {
-        return new TimestampPair(timestamp);
+    public Response getTimestamp(@QueryParam("timestamp") Long timestamp) {
+
+        // Return successful reponse containing requested timestamps and
+        // CORS headers
+        return Response.ok(new TimestampPair(timestamp))
+                .header("Access-Control-Allow-Origin", "*")
+                .build();
+
     }
 
     /**
