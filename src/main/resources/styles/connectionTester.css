@@ -19,7 +19,7 @@
 
 .connection-tester .connection-tester-report .server-location img.flag-icon {
     max-width: 2em;
-    max-height: 1em;
+    margin: 0 0.25em;
 }
 
 .connection-tester .connection-tester-report .server-url {
