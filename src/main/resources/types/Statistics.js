@@ -31,6 +31,31 @@ angular.module('guacConntest').factory('Statistics', [function defineStatistics(
     };
 
     /**
+     * Returns the mean (average) value of all samples in the given set.
+     *
+     * @param {Number[]} samples
+     *     An array of samples for which the mean should be calculated.
+     *
+     * @returns {Number}
+     *     The average taken across all given samples.
+     */
+    var getMean = function getMean(samples) {
+        
+        // The average of zero samples is zero
+        if (samples.length === 0)
+            return 0;
+        
+        // Calculate total of all sample values
+        var total = 0;
+        for (var i = 0; i < samples.length; i++)
+            total += samples[i];
+        
+        // Return average value
+        return total / samples.length;
+        
+    };
+
+    /**
      * Returns the median value of all samples in the given set. The sample
      * array MUST already be sorted.
      *
@@ -57,32 +82,29 @@ angular.module('guacConntest').factory('Statistics', [function defineStatistics(
     };
 
     /**
-     * Returns the median absolute deviation across all given samples relative
-     * to a given value.
+     * Returns an array of the absolute deviation of each sample relative to a
+     * given value.
      *
      * @param {Number[]} samples
-     *     An array of samples for which the median absolute deviation should
-     *     be calculated.
+     *     An array of samples for which the absolute deviation if each sample
+     *     should be calculated.
      *
      * @param {Number} value
      *     The value that each sample should be compared against to determine
      *     the absolute deviation for that sample.
      *
-     * @returns {Number}
-     *     The median absolute deviation across all given samples.
+     * @returns {Number[]}
+     *     An array of the absolute deviation of each sample relative to the
+     *     given value.
      */
-    var getMedianAbsoluteDeviation = function getMedianAbsoluteDeviation(samples, value) {
+    var getAbsoluteDeviations = function getAbsoluteDeviations(samples, value) {
 
         // Build list of absolute deviations for all samples
         var absoluteDeviations = [];
         for (var i = 0; i < samples.length; i++)
             absoluteDeviations.push(Math.abs(samples[i] - value));
 
-        // Sort values prior to calculating median
-        absoluteDeviations.sort(numericComparator);
-
-        // Return median absolute deviation
-        return getMedian(absoluteDeviations);
+        return absoluteDeviations;
 
     };
 
@@ -111,12 +133,29 @@ angular.module('guacConntest').factory('Statistics', [function defineStatistics(
         this.median = getMedian(this.samples);
 
         /**
+         * Sorted Array of the absolute deviation of each sample from the
+         * median.
+         *
+         * @private
+         * @type Number[]
+         */
+        var deviations = getAbsoluteDeviations(this.samples, this.median).sort(numericComparator);
+
+        /**
+         * The mean absolute deviation of all given samples relative to the
+         * median.
+         *
+         * @type Number
+         */
+        this.meanAbsoluteDeviation = getMean(deviations);
+
+        /**
          * The median absolute deviation of all given samples relative to the
          * median.
          *
          * @type Number
          */
-        this.medianAbsoluteDeviation = getMedianAbsoluteDeviation(this.samples, this.median);
+        this.medianAbsoluteDeviation = getMedian(deviations);
 
     };
 
