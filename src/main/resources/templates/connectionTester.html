@@ -17,7 +17,12 @@
                     'roundTripStatistics.average',
                     'roundTripStatistics.standardDeviation'
                 ]">
-                <td class="server-location"><img class="flag-icon" src="app/ext/conntest/flags/US.png" alt="US"/> San Francisco</td>
+                <td class="server-location">
+                    <img class="flag-icon" ng-show="result.server.country"
+                         ng-src="app/ext/conntest/flags/{{result.server.country}}.png"
+                         alt="{{result.server.country}}"/>
+                    San Francisco
+                </td>
                 <td class="server-url"><a ng-href="{{result.server.url}}">{{result.server.url}}</a></td>
                 <td class="server-rtt">
 

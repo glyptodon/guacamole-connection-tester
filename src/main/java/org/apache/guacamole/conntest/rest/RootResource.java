@@ -90,10 +90,10 @@ public class RootResource {
 
         // FIXME: STUB
         return Arrays.asList(
-            new Server("http://localhost:8080/guacamole/"),
-            new Server("https://guacamole.example.org/"),
-            new Server("https://guacamole.example.net/"),
-            new Server("https://other.example.org/guacamole/")
+            new Server(CountryCode.AD, "http://localhost:8080/guacamole/"),
+            new Server(CountryCode.AE, "https://guacamole.example.org/"),
+            new Server(CountryCode.AF, "https://guacamole.example.net/"),
+            new Server(CountryCode.AG, "https://other.example.org/guacamole/")
         );
 
     }

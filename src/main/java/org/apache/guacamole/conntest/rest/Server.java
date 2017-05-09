@@ -34,14 +34,37 @@ public class Server {
     private final String url;
 
     /**
+     * The two-letter country code of the country in which this server is
+     * located, as defined by ISO 3166-2.
+     */
+    private final CountryCode country;
+
+    /**
      * Creates a new Server representing the Guacamole server having the given
      * base URL.
+     *
+     * @param country
+     *     The two-letter country code of the country in which this server is
+     *     located, as defined by ISO 3166-2.
      *
      * @param url
      *     The base URL of the Guacamole server.
      */
-    public Server(String url) {
+    public Server(CountryCode country, String url) {
+        this.country = country;
         this.url = url;
+    }
+
+    /**
+     * Returns the two-letter country code of the country in which this server
+     * is located, as defined by ISO 3166-2.
+     *
+     * @return
+     *     The two-letter country code of the country in which this server is
+     *     located, as defined by ISO 3166-2.
+     */
+    public CountryCode getCountry() {
+        return country;
     }
 
     /**

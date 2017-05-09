@@ -37,6 +37,14 @@ angular.module('guacConntest').factory('Server', [function defineServer() {
         template = template || {};
 
         /**
+         * The two-letter country code of the country in which the Guacamole
+         * server is located, as defined by ISO 3166-2.
+         *
+         * @type String
+         */
+        this.country = template.country;
+
+        /**
          * The base URL of the Guacamole server.
          *
          * @type String
