@@ -65,6 +65,11 @@ angular.module('guacConntest').factory('connectionTestService', ['$injector',
      */
     service.getTimestamps = function getTimestamps(serverUrl, timeout) {
 
+        // Strip the URL fragment if present
+        var hash = serverUrl.indexOf('#');
+        if (hash !== -1)
+            serverUrl = serverUrl.substring(0, hash);
+
         // Append trailing slash if missing
         if (!/\/$/.exec(serverUrl))
             serverUrl += '/';
