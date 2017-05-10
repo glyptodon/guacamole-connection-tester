@@ -64,12 +64,19 @@ angular.module('guacConntest').factory('connectionTestService', ['$injector',
      *     the client time when the request was made.
      */
     service.getTimestamps = function getTimestamps(serverUrl, timeout) {
+
+        // Append trailing slash if missing
+        if (!/\/$/.exec(serverUrl))
+            serverUrl += '/';
+
+        // Ping the Guacamole server's timestamp service
         return $http({
             method  : 'GET',
-            url     : serverUrl + '/api/ext/conntest/time',
+            url     : serverUrl + 'api/ext/conntest/time',
             timeout : timeout,
             params  : { 'timestamp' : new Date().getTime() }
         });
+
     };
 
     return service;
