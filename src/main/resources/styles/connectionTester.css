@@ -18,8 +18,10 @@
  */
 
 .connection-tester .connection-tester-report .server-location img.flag-icon {
+    box-sizing: content-box;
     max-width: 24px;
     margin: 0 0.25em;
+    border: 1px solid rgba(0, 0, 0, 0.25);
 }
 
 .connection-tester .connection-tester-report .server-url {
