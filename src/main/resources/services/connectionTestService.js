@@ -30,13 +30,14 @@ angular.module('guacConntest').factory('connectionTestService', ['$injector',
 
     /**
      * Makes a request to the REST API to get the list of Guacamole servers
-     * available for testing, returning a promise that provides an array of
+     * available for testing, returning a promise that provides an map of
      * @link{Server} objects if successful.
      *
-     * @returns {Promise.<Server[]>}
-     *     A promise which will resolve with an array of @link{Server}
-     *     objects, where each @link{Server} describes a Guacamole server
-     *     available for testing, in order of decreasing priority.
+     * @returns {Promise.<Object.<String, Server[]>>}
+     *     A promise which will resolve with a map of @link{Server}
+     *     objects, where the key of each entry is the human-reable name for
+     *     the Guacamole server described by the corresponding @link{Server}
+     *     object.
      */
     service.getServers = function getServers() {
         return $http({

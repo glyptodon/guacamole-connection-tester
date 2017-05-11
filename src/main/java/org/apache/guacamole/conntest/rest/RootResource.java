@@ -20,7 +20,7 @@
 package org.apache.guacamole.conntest.rest;
 
 import com.google.inject.Inject;
-import java.util.Collection;
+import java.util.Map;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -84,17 +84,17 @@ public class RootResource {
     }
 
     /**
-     * Returns a list absolute URLs for all Guacamole servers within the pool
-     * being tested, in order of priority.
+     * Returns a map of all Guacamole servers within the pool being tested,
+     * where the key of each entry is a unique and human-readable name for that
+     * Guacamole server.
      *
      * @return
-     *     A list absolute URLs for all Guacamole servers within the pool being
-     *     tested, in order of priority.
+     *     A map of all Guacamole servers within the pool being tested.
      */
     @GET
     @Path("servers")
-    public Collection<Server> getServerURLs() {
-        return confService.getServers().values();
+    public Map<String, Server> getServerURLs() {
+        return confService.getServers();
     }
 
 }

@@ -37,6 +37,14 @@ angular.module('guacConntest').factory('Result', [function defineResult() {
         template = template || {};
 
         /**
+         * An arbitrary, unique, human-readable name for the Guacamole server
+         * which was tested.
+         *
+         * @type String
+         */
+        this.name = template.name;
+
+        /**
          * The Guacamole server which was tested.
          *
          * @type Server

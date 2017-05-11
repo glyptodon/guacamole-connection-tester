@@ -88,59 +88,63 @@ angular.module('guacConntest').controller('connectionTesterController', ['$scope
     };
 
     /**
-     * Sequentially tests each server in the given array. Only one server at a
-     * time is tested.
+     * Sequentially tests each server associated with the incomplete results in
+     * the given array, populating the values of each result as the tests are
+     * completed. Only one server at a time is tested.
      *
-     * NOTE: This function will modify the given array, removing servers from
-     * the array while the tests are performed. It is unsafe to continue to use
-     * the array after this function has been invoked except to monitor
+     * NOTE: This function will modify the given array, removing result objects
+     * from the array while the tests are performed. It is unsafe to continue
+     * to use the array after this function has been invoked except to monitor
      * progress.
      *
-     * @param {Server[]} servers
-     *     An array of all servers to test. This array will be gradually
-     *     emptied by this function as tests are performed.
+     * @param {Result[]} results
+     *     An array of incomplete results to populate. This array will be
+     *     gradually emptied by this function as tests are performed.
      */
-    var testServers = function testServers(servers) {
+    var testServers = function testServers(results) {
 
-        // Pull next server from array
-        var server = servers.shift();
-        if (!server)
+        // Pull next result from array
+        var result = results.shift();
+        if (!result)
             return;
 
         // Measure round trip statistics for current server
-        statisticalMeasurementService.getRoundTripStatistics(server.url)
+        statisticalMeasurementService.getRoundTripStatistics(result.server.url)
 
         // If successful, add server test result
         .then(function roundTripTimeMeasured(stats) {
-            $scope.results.push(new Result({
-                'server'              : server,
-                'niceness'            : getNiceness(stats),
-                'roundTripStatistics' : stats
-            }));
+            result.niceness = getNiceness(stats);
+            result.roundTripStatistics = stats;
         })
 
         // Otherwise, mark server as bad
         ['catch'](function testRemainingServers() {
-            $scope.results.push(new Result({
-                'server'              : server,
-                'niceness'            : NICENESS_BINS,
-                'roundTripStatistics' : null
-            }));
+            result.niceness = NICENESS_BINS;
         })
 
         // Test all remaining servers
         ['finally'](function testRemainingServers() {
-            testServers(servers);
+            $scope.results.push(result);
+            testServers(results);
         });
 
     };
 
-    // Test all servers once the server list has been retrieved
+    // Test all servers once the server map has been retrieved
     connectionTestService.getServers()
     .success(function receivedServerList(servers) {
 
-        // Perform test against a copy of the servers array
-        testServers(servers.slice());
+        // Create skeleton test results for all servers
+        var pendingResults = [];
+        angular.forEach(servers, function createPendingResult(server, name) {
+            pendingResults.push(new Result({
+                'name'   : name,
+                'server' : server
+            }));
+        });
+
+        // Test all servers retrieved
+        testServers(pendingResults);
 
     });
 
