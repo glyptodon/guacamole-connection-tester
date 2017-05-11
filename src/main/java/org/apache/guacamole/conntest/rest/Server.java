@@ -31,29 +31,13 @@ public class Server {
     /**
      * The base URL of the Guacamole server.
      */
-    private final String url;
+    private String url;
 
     /**
      * The two-letter country code of the country in which this server is
      * located, as defined by ISO 3166-2.
      */
-    private final CountryCode country;
-
-    /**
-     * Creates a new Server representing the Guacamole server having the given
-     * base URL.
-     *
-     * @param country
-     *     The two-letter country code of the country in which this server is
-     *     located, as defined by ISO 3166-2.
-     *
-     * @param url
-     *     The base URL of the Guacamole server.
-     */
-    public Server(CountryCode country, String url) {
-        this.country = country;
-        this.url = url;
-    }
+    private CountryCode country;
 
     /**
      * Returns the two-letter country code of the country in which this server
@@ -68,6 +52,18 @@ public class Server {
     }
 
     /**
+     * Sets the two-letter country code of the country in which this server is
+     * located, as defined by ISO 3166-2.
+     *
+     * @param country
+     *     The two-letter country code of the country in which this server is
+     *     located, as defined by ISO 3166-2.
+     */
+    public void setCountry(CountryCode country) {
+        this.country = country;
+    }
+
+    /**
      * Returns the base URL of the Guacamole server.
      *
      * @return
@@ -76,6 +72,17 @@ public class Server {
     @JsonProperty("url")
     public String getURL() {
         return url;
+    }
+
+    /**
+     * Sets the base URL of the Guacamole server.
+     *
+     * @param url
+     *     The base URL of the Guacamole server.
+     */
+    @JsonProperty("url")
+    public void setURL(String url) {
+        this.url = url;
     }
 
 }

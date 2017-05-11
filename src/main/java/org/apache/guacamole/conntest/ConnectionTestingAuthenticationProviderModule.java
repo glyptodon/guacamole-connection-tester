@@ -20,11 +20,13 @@
 package org.apache.guacamole.conntest;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.Scopes;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.conntest.rest.RootResource;
 import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.environment.LocalEnvironment;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
+import org.codehaus.jackson.map.ObjectMapper;
 
 /**
  * Guice module which configures injections specific to the Guacamole
@@ -71,6 +73,9 @@ public class ConnectionTestingAuthenticationProviderModule extends AbstractModul
         // Bind core implementations of guacamole-ext classes
         bind(AuthenticationProvider.class).toInstance(authProvider);
         bind(Environment.class).toInstance(environment);
+
+        // Bind mapper for deserializing JSON
+        bind(ObjectMapper.class).in(Scopes.SINGLETON);
 
         // Bind connection testing REST resources
         bind(RootResource.class);

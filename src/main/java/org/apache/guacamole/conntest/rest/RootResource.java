@@ -19,20 +19,27 @@
 
 package org.apache.guacamole.conntest.rest;
 
-import java.util.Arrays;
-import java.util.List;
+import com.google.inject.Inject;
+import java.util.Collection;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import org.apache.guacamole.conntest.conf.ConfigurationService;
 
 /**
  * The root-level resource of the Guacamole connection testing extension.
  */
 @Produces(MediaType.APPLICATION_JSON)
 public class RootResource {
+
+    /**
+     * Service for retrieving configuration information.
+     */
+    @Inject
+    private ConfigurationService confService;
 
     /**
      * Returns the version of this extension, as declared within the project
@@ -86,16 +93,8 @@ public class RootResource {
      */
     @GET
     @Path("servers")
-    public List<Server> getServerURLs() {
-
-        // FIXME: STUB
-        return Arrays.asList(
-            new Server(CountryCode.AD, "http://localhost:8080/guacamole/"),
-            new Server(CountryCode.AE, "https://guacamole.example.org/"),
-            new Server(CountryCode.AF, "https://guacamole.example.net/"),
-            new Server(CountryCode.AG, "https://other.example.org/guacamole/")
-        );
-
+    public Collection<Server> getServerURLs() {
+        return confService.getServers().values();
     }
 
 }
