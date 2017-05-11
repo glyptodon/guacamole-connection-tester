@@ -20,6 +20,7 @@
 package org.apache.guacamole.conntest.conf;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
@@ -35,6 +36,7 @@ import org.slf4j.LoggerFactory;
  * Service for retrieving configuration information regarding the Guacamole
  * connection testing tool.
  */
+@Singleton
 public class ConfigurationService {
 
     /**
