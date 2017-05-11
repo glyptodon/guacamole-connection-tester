@@ -19,6 +19,7 @@
 
 package org.apache.guacamole.conntest.rest;
 
+import java.net.URL;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
@@ -31,7 +32,7 @@ public class Server {
     /**
      * The base URL of the Guacamole server.
      */
-    private String url;
+    private URL url;
 
     /**
      * The two-letter country code of the country in which this server is
@@ -70,7 +71,7 @@ public class Server {
      *     The base URL of the Guacamole server.
      */
     @JsonProperty("url")
-    public String getURL() {
+    public URL getURL() {
         return url;
     }
 
@@ -81,7 +82,7 @@ public class Server {
      *     The base URL of the Guacamole server.
      */
     @JsonProperty("url")
-    public void setURL(String url) {
+    public void setURL(URL url) {
         this.url = url;
     }
 
