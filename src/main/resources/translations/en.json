@@ -1,0 +1,15 @@
+{
+
+    "DATA_SOURCE_CONNTEST" : {
+        "NAME" : "Connection Testing Tool"
+    },
+
+    "CONNTEST" : {
+        "INFO_SERVER_UNAVAILABLE" : "Unavailable",
+        "SECTION_HEADER_RESULTS"  : "Connection Test Results",
+        "TABLE_HEADER_RESULT"     : "Result",
+        "TABLE_HEADER_SERVER"     : "Server",
+        "TABLE_HEADER_URL"        : "URL"
+    }
+
+}

@@ -9,6 +9,10 @@
         "org.apache.guacamole.conntest.ConnectionTestingAuthenticationProvider"
     ],
 
+    "translations" : [
+        "translations/en.json"
+    ],
+
     "css" : [
         "conntest.min.css"
     ],

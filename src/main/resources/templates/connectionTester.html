@@ -1,14 +1,14 @@
 <div class="connection-tester-report">
 
-    <h1>Guacamole Connection Tester</h1>
+    <h1>{{'CONNTEST.SECTION_HEADER_RESULTS' | translate}}</h1>
 
     <!-- Connection testing results -->
     <table class="results">
         <thead>
             <tr>
-                <th>Location</th>
-                <th>URL</th>
-                <th>Result</th>
+                <th>{{'CONNTEST.TABLE_HEADER_SERVER' | translate}}</th>
+                <th>{{'CONNTEST.TABLE_HEADER_URL' | translate}}</th>
+                <th>{{'CONNTEST.TABLE_HEADER_RESULT' | translate}}</th>
             </tr>
         </thead>
         <tbody>
@@ -33,7 +33,9 @@
                     </span>
 
                     <!-- Server unavailable warning -->
-                    <span ng-hide="result.roundTripStatistics">Unavailable</span>
+                    <span ng-hide="result.roundTripStatistics">
+                        {{'CONNTEST.INFO_SERVER_UNAVAILABLE' | translate}}
+                    </span>
 
                 </td>
             </tr>
