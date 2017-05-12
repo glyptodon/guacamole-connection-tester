@@ -68,6 +68,14 @@ angular.module('guacConntest').factory('Result', [function defineResult() {
          */
         this.roundTripStatistics = template.roundTripStatistics;
 
+        /**
+         * Whether the server associated with this result has finished being
+         * tested.
+         *
+         * @type Boolean
+         */
+        this.complete = !!template.complete;
+
     };
 
     return Result;

@@ -17,10 +17,16 @@
                 <th>{{'CONNTEST.TABLE_HEADER_RESULT' | translate}}</th>
             </tr>
         </thead>
-
-        <!-- Completed server tests -->
         <tbody>
-            <tr ng-class="'quality' + result.niceness" ng-repeat="result in results | orderBy: [
+            <tr ng-class="{
+                    'pending'  : !result.complete,
+                    'quality0' : result.niceness === 0,
+                    'quality1' : result.niceness === 1,
+                    'quality2' : result.niceness === 2,
+                    'quality3' : result.niceness === 3,
+                    'quality4' : result.niceness === 4
+                }"
+                ng-repeat="result in results | orderBy: [
                     'niceness',
                     'roundTripStatistics.median',
                     'roundTripStatistics.medianAbsoluteDeviation'
@@ -34,37 +40,30 @@
                 <td class="server-url"><a ng-href="{{result.server.url}}">{{result.server.url}}</a></td>
                 <td class="server-result">
 
-                    <!-- Round trip time statistics (if server is available) -->
-                    <span ng-show="result.roundTripStatistics">
-                          {{result.roundTripStatistics.median | number: 0}} ms
-                        ± {{result.roundTripStatistics.medianAbsoluteDeviation | number: 0}}
+                    <!-- Final result statistics, available only when result is complete -->
+                    <span ng-show="result.complete">
+
+                        <!-- Round trip time statistics (if server is available) -->
+                        <span ng-show="result.roundTripStatistics">
+                              {{result.roundTripStatistics.median | number: 0}} ms
+                            ± {{result.roundTripStatistics.medianAbsoluteDeviation | number: 0}}
+                        </span>
+
+                        <!-- Server unavailable warning -->
+                        <span ng-hide="result.roundTripStatistics">
+                            {{'CONNTEST.INFO_SERVER_UNAVAILABLE' | translate}}
+                        </span>
+
                     </span>
 
-                    <!-- Server unavailable warning -->
-                    <span ng-hide="result.roundTripStatistics">
-                        {{'CONNTEST.INFO_SERVER_UNAVAILABLE' | translate}}
+                    <!-- Test result pending -->
+                    <span ng-hide="result.complete">
+                        {{'CONNTEST.INFO_SERVER_TEST_PENDING' | translate}}
                     </span>
 
                 </td>
             </tr>
         </tbody>
-
-        <!-- Pending / in-progress server tests -->
-        <tbody>
-            <tr class="pending" ng-repeat="result in pendingResults | orderBy: 'name'">
-                <td class="server-name">
-                    <img class="flag-icon" ng-show="result.server.country"
-                         ng-src="app/ext/conntest/flags/{{result.server.country}}.png"
-                         alt="{{result.server.country}}"/>
-                    {{result.name}}
-                </td>
-                <td class="server-url"><a ng-href="{{result.server.url}}">{{result.server.url}}</a></td>
-                <td class="server-result">
-                    <span>{{'CONNTEST.INFO_SERVER_TEST_PENDING' | translate}}</span>
-                </td>
-            </tr>
-        </tbody>
-
     </table>
 
 </div>

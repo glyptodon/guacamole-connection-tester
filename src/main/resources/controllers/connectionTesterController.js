@@ -24,6 +24,7 @@ angular.module('guacConntest').controller('connectionTesterController', ['$scope
     function connectionTesterController($scope, $injector) {
 
     // Required services
+    var $routeParams                  = $injector.get('$routeParams');
     var connectionTestService         = $injector.get('connectionTestService');
     var statisticalMeasurementService = $injector.get('statisticalMeasurementService');
 
@@ -50,11 +51,14 @@ angular.module('guacConntest').controller('connectionTesterController', ['$scope
     var WORST_TOLERABLE_LATENCY = 220;
 
     /**
-     * Array of all server test results which have not yet completed.
+     * The number of tests to run in parallel. This may be overridden through
+     * specifying the "n" parameter in the URL. By default, four servers are
+     * tested at a time.
      *
-     * @type Result[]
+     * @constant
+     * @type Number
      */
-    $scope.pendingResults = [];
+    var CONCURRENCY = parseInt($routeParams.n) || 4;
 
     /**
      * Array of all final server test results.
@@ -65,13 +69,28 @@ angular.module('guacConntest').controller('connectionTesterController', ['$scope
 
     /**
      * Returns the place value (not index) of the server being tested relative
-     * to the total number of servers, where 1 is the first server.
+     * to the total number of servers, where 1 is the first server. This place
+     * value is not necessarily the true place value of the server, as server
+     * results may be processed out-of-order and/or in parallel, but rather an
+     * overall progress indicator.
      *
      * @returns {Number}
      *     The place value of the server being tested.
      */
     $scope.getCurrentServer = function getCurrentServer() {
-        return $scope.results.length + 1;
+
+        var incompleteServers = 0;
+
+        // Count the number of incomplete results
+        for (var i = 0; i < $scope.results.length; i++) {
+            if (!$scope.results[i].complete)
+                incompleteServers++;
+        }
+
+        // Return (fake) place value of first incomplete server, as if all
+        // completed servers were first in the list
+        return $scope.results.length - incompleteServers + 1;
+
     };
 
     /**
@@ -82,7 +101,7 @@ angular.module('guacConntest').controller('connectionTesterController', ['$scope
      *     The total number of servers available.
      */
     $scope.getTotalServers = function getTotalServers() {
-        return $scope.results.length + $scope.pendingResults.length;
+        return $scope.results.length;
     };
 
     /**
@@ -92,7 +111,16 @@ angular.module('guacConntest').controller('connectionTesterController', ['$scope
      *     true if a server test is currently running, false otherwise.
      */
     $scope.isRunning = function isRunning() {
-        return !!$scope.pendingResults.length;
+
+        // Tests are running if at least one result is incomplete
+        for (var i = 0; i < $scope.results.length; i++) {
+            if (!$scope.results[i].complete)
+                return true;
+        }
+
+        // Tests are not running if all results are complete
+        return false;
+
     };
 
     /**
@@ -143,7 +171,7 @@ angular.module('guacConntest').controller('connectionTesterController', ['$scope
     var testServers = function testServers(results) {
 
         // Pull next result from array
-        var result = results[0];
+        var result = results.shift();
         if (!result)
             return;
 
@@ -163,8 +191,7 @@ angular.module('guacConntest').controller('connectionTesterController', ['$scope
 
         // Test all remaining servers
         ['finally'](function testRemainingServers() {
-            results.shift();
-            $scope.results.push(result);
+            result.complete = true;
             testServers(results);
         });
 
@@ -178,16 +205,17 @@ angular.module('guacConntest').controller('connectionTesterController', ['$scope
         $scope.results = [];
 
         // Create skeleton test results for all servers
-        $scope.pendingResults = [];
         angular.forEach(servers, function createPendingResult(server, name) {
-            $scope.pendingResults.push(new Result({
+            $scope.results.push(new Result({
                 'name'   : name,
                 'server' : server
             }));
         });
 
         // Test all servers retrieved
-        testServers($scope.pendingResults);
+        var pendingResults = $scope.results.slice();
+        for (var i = 0; i < CONCURRENCY; i++)
+            testServers(pendingResults);
 
     });
 
