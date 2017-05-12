@@ -5,11 +5,13 @@
     },
 
     "CONNTEST" : {
-        "INFO_SERVER_UNAVAILABLE" : "Unavailable",
-        "SECTION_HEADER_RESULTS"  : "Connection Test Results",
-        "TABLE_HEADER_RESULT"     : "Result",
-        "TABLE_HEADER_SERVER"     : "Server",
-        "TABLE_HEADER_URL"        : "URL"
+        "INFO_SERVER_UNAVAILABLE"  : "Unavailable",
+        "INFO_SERVER_TEST_PENDING" : "Pending...",
+        "INFO_TESTING_SERVER"      : "Testing server {CURRENT} of {TOTAL} ...",
+        "SECTION_HEADER_RESULTS"   : "Connection Test Results",
+        "TABLE_HEADER_RESULT"      : "Result",
+        "TABLE_HEADER_SERVER"      : "Server",
+        "TABLE_HEADER_URL"         : "URL"
     }
 
 }

@@ -17,6 +17,12 @@
  * under the License.
  */
 
+.connection-tester .connection-tester-progress {
+    text-align: center;
+    font-style: italic;
+    opacity: 0.75;
+}
+
 .connection-tester .connection-tester-report .server-name img.flag-icon {
     box-sizing: content-box;
     max-width: 24px;
@@ -82,6 +88,15 @@
 .connection-tester .connection-tester-report table.results tr.quality4 .server-result {
     background: black;
     color: white;
+}
+
+/*
+ * Completely unreachable server.
+ */
+
+.connection-tester .connection-tester-report table.results tr.pending .server-result {
+    font-style: italic;
+    opacity: 0.75;
 }
 
 /*

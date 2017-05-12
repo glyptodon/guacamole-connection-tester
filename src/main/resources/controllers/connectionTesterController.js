@@ -50,11 +50,50 @@ angular.module('guacConntest').controller('connectionTesterController', ['$scope
     var WORST_TOLERABLE_LATENCY = 220;
 
     /**
+     * Array of all server test results which have not yet completed.
+     *
+     * @type Result[]
+     */
+    $scope.pendingResults = [];
+
+    /**
      * Array of all final server test results.
      *
      * @type Result[]
      */
     $scope.results = [];
+
+    /**
+     * Returns the place value (not index) of the server being tested relative
+     * to the total number of servers, where 1 is the first server.
+     *
+     * @returns {Number}
+     *     The place value of the server being tested.
+     */
+    $scope.getCurrentServer = function getCurrentServer() {
+        return $scope.results.length + 1;
+    };
+
+    /**
+     * Returns the total number of servers available, including those which
+     * have not yet been tested.
+     *
+     * @returns {Number}
+     *     The total number of servers available.
+     */
+    $scope.getTotalServers = function getTotalServers() {
+        return $scope.results.length + $scope.pendingResults.length;
+    };
+
+    /**
+     * Returns whether a server test is currently running.
+     *
+     * @returns {Boolean}
+     *     true if a server test is currently running, false otherwise.
+     */
+    $scope.isRunning = function isRunning() {
+        return !!$scope.pendingResults.length;
+    };
 
     /**
      * Returns an arbitrary niceness value indicating how subjectively good a
@@ -104,7 +143,7 @@ angular.module('guacConntest').controller('connectionTesterController', ['$scope
     var testServers = function testServers(results) {
 
         // Pull next result from array
-        var result = results.shift();
+        var result = results[0];
         if (!result)
             return;
 
@@ -124,6 +163,7 @@ angular.module('guacConntest').controller('connectionTesterController', ['$scope
 
         // Test all remaining servers
         ['finally'](function testRemainingServers() {
+            results.shift();
             $scope.results.push(result);
             testServers(results);
         });
@@ -134,17 +174,20 @@ angular.module('guacConntest').controller('connectionTesterController', ['$scope
     connectionTestService.getServers()
     .success(function receivedServerList(servers) {
 
+        // Reset any past results
+        $scope.results = [];
+
         // Create skeleton test results for all servers
-        var pendingResults = [];
+        $scope.pendingResults = [];
         angular.forEach(servers, function createPendingResult(server, name) {
-            pendingResults.push(new Result({
+            $scope.pendingResults.push(new Result({
                 'name'   : name,
                 'server' : server
             }));
         });
 
         // Test all servers retrieved
-        testServers(pendingResults);
+        testServers($scope.pendingResults);
 
     });
 

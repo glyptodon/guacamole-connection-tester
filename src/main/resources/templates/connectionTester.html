@@ -2,6 +2,12 @@
 
     <h1>{{'CONNTEST.SECTION_HEADER_RESULTS' | translate}}</h1>
 
+    <!-- Connection test progress -->
+    <div class="connection-tester-progress" ng-show="isRunning()">
+        <span translate="CONNTEST.INFO_TESTING_SERVER"
+              translate-values="{ CURRENT: getCurrentServer(), TOTAL: getTotalServers() }"></span>
+    </div>
+
     <!-- Connection testing results -->
     <table class="results">
         <thead>
@@ -11,6 +17,8 @@
                 <th>{{'CONNTEST.TABLE_HEADER_RESULT' | translate}}</th>
             </tr>
         </thead>
+
+        <!-- Completed server tests -->
         <tbody>
             <tr ng-class="'quality' + result.niceness" ng-repeat="result in results | orderBy: [
                     'niceness',
@@ -40,6 +48,23 @@
                 </td>
             </tr>
         </tbody>
+
+        <!-- Pending / in-progress server tests -->
+        <tbody>
+            <tr class="pending" ng-repeat="result in pendingResults | orderBy: 'name'">
+                <td class="server-name">
+                    <img class="flag-icon" ng-show="result.server.country"
+                         ng-src="app/ext/conntest/flags/{{result.server.country}}.png"
+                         alt="{{result.server.country}}"/>
+                    {{result.name}}
+                </td>
+                <td class="server-url"><a ng-href="{{result.server.url}}">{{result.server.url}}</a></td>
+                <td class="server-result">
+                    <span>{{'CONNTEST.INFO_SERVER_TEST_PENDING' | translate}}</span>
+                </td>
+            </tr>
+        </tbody>
+
     </table>
 
 </div>
