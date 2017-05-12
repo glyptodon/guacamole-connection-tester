@@ -29,7 +29,8 @@
                 ng-repeat="result in results | orderBy: [
                     'niceness',
                     'roundTripStatistics.median',
-                    'roundTripStatistics.medianAbsoluteDeviation'
+                    'roundTripStatistics.medianAbsoluteDeviation',
+                    'name'
                 ]">
                 <td class="server-name">
                     <img class="flag-icon" ng-show="result.server.country"
