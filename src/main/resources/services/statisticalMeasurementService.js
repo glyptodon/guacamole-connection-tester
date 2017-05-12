@@ -37,7 +37,7 @@ angular.module('guacConntest').factory('statisticalMeasurementService', ['$injec
      * @constant
      * @type Number
      */
-    var MAX_SAMPLING_TIME = 1000;
+    var MAX_SAMPLING_TIME = 3000;
 
     /**
      * The maximum amount of time to spend collecting any individual sample.
