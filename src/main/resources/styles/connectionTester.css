@@ -43,23 +43,54 @@
     padding: 0.5em 1em;
 }
 
+/*
+ * Server with excellent latency.
+ */
+
 .connection-tester .connection-tester-report table.results tr.quality0 .server-rtt {
     background: rgba(64, 192, 0, 0.5);
 }
+
+/*
+ * Server with good latency.
+ */
 
 .connection-tester .connection-tester-report table.results tr.quality1 .server-rtt {
     background: rgba(192, 192, 0, 0.5);
 }
 
+/*
+ * Server with poor (but tolerable) latency.
+ */
+
 .connection-tester .connection-tester-report table.results tr.quality2 .server-rtt {
     background: rgba(192, 128, 0, 0.5);
 }
+
+/*
+ * Server with extremely poor latency.
+ */
 
 .connection-tester .connection-tester-report table.results tr.quality3 .server-rtt {
     background: rgba(192, 0, 0, 0.5);
 }
 
+/*
+ * Completely unreachable server.
+ */
+
 .connection-tester .connection-tester-report table.results tr.quality4 .server-rtt {
     background: black;
     color: white;
+}
+
+/*
+ * Highlight the best server if it has reasonable latency.
+ */
+
+.connection-tester .connection-tester-report table.results tbody tr:first-child.quality0,
+.connection-tester .connection-tester-report table.results tbody tr:first-child.quality1,
+.connection-tester .connection-tester-report table.results tbody tr:first-child.quality2 {
+    font-weight: bold;
+    border: 1px solid black;
 }
