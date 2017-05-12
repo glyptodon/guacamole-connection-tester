@@ -128,7 +128,7 @@ angular.module('guacConntest').factory('statisticalMeasurementService', ['$injec
 
         // If the ping was successful, update the statistics, possibly pinging
         // the server again
-        .success(function timestampsReceived(timestamps) {
+        .then(function timestampsReceived(timestamps) {
 
             var currentTime = new Date().getTime();
 
@@ -150,7 +150,7 @@ angular.module('guacConntest').factory('statisticalMeasurementService', ['$injec
         })
 
         // If the ping failed, abort and reject the promise
-        .error(function testFailed() {
+        ['catch'](function testFailed() {
             request.reject();
         });
 

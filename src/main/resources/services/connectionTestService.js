@@ -25,7 +25,11 @@ angular.module('guacConntest').factory('connectionTestService', ['$injector',
 
     // Required services
     var $http = $injector.get('$http');
-    
+    var $q    = $injector.get('$q');
+
+    // Required types
+    var TimestampPair = $injector.get('TimestampPair');
+
     var service = {};
 
     /**
@@ -40,10 +44,27 @@ angular.module('guacConntest').factory('connectionTestService', ['$injector',
      *     object.
      */
     service.getServers = function getServers() {
-        return $http({
+
+        var request = $q.defer();
+
+        // Attempt to retrieve server list
+        $http({
             method  : 'GET',
             url     : 'api/ext/conntest/servers'
+        })
+
+        // If successful, resolve promise with map of servers
+        .then(function serverListRetrievalSucceeded(response) {
+            request.resolve(response.data);
+        })
+
+        // If unsuccessful, resolve with empty map
+        ['catch'](function serverListRetrievalFailed() {
+            request.resolve({});
         });
+
+        return request.promise;
+
     };
 
     /**
@@ -66,6 +87,9 @@ angular.module('guacConntest').factory('connectionTestService', ['$injector',
      */
     service.getTimestamps = function getTimestamps(serverUrl, timeout) {
 
+        var request = $q.defer();
+        var timestamp = new Date().getTime();
+
         // Strip the URL fragment if present
         var hash = serverUrl.indexOf('#');
         if (hash !== -1)
@@ -76,12 +100,36 @@ angular.module('guacConntest').factory('connectionTestService', ['$injector',
             serverUrl += '/';
 
         // Ping the Guacamole server's timestamp service
-        return $http({
+        $http({
             method  : 'GET',
             url     : serverUrl + 'api/ext/conntest/time',
             timeout : timeout,
-            params  : { 'timestamp' : new Date().getTime() }
+            params  : { 'timestamp' : timestamp }
+        })
+
+        // Resolve promise with received timestamps if successful
+        .then(function timestampRequestSucceeded(response) {
+            request.resolve(response.data);
+        })
+
+        // Reject promise (or fake the timestamp response) if unsuccessful
+        ['catch'](function timestampRequestFailed(response) {
+
+            // If the server simply lacks the connection test extension, use
+            // the error response as the ping response
+            if (response.status === 404)
+                request.resolve(new TimestampPair({
+                    'serverTimestamp' : new Date().getTime(),
+                    'clientTimestamp' : timestamp
+                }));
+
+            // Otherwise, request has simply failed
+            else
+                request.reject();
+
         });
+
+        return request.promise;
 
     };
 

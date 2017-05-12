@@ -172,7 +172,7 @@ angular.module('guacConntest').controller('connectionTesterController', ['$scope
 
     // Test all servers once the server map has been retrieved
     connectionTestService.getServers()
-    .success(function receivedServerList(servers) {
+    .then(function receivedServerList(servers) {
 
         // Reset any past results
         $scope.results = [];
