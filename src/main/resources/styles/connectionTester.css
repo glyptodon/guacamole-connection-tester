@@ -17,7 +17,7 @@
  * under the License.
  */
 
-.connection-tester .connection-tester-report .server-location img.flag-icon {
+.connection-tester .connection-tester-report .server-name img.flag-icon {
     box-sizing: content-box;
     max-width: 24px;
     margin: 0 0.25em;
@@ -47,7 +47,7 @@
  * Server with excellent latency.
  */
 
-.connection-tester .connection-tester-report table.results tr.quality0 .server-rtt {
+.connection-tester .connection-tester-report table.results tr.quality0 .server-result {
     background: rgba(64, 192, 0, 0.5);
 }
 
@@ -55,7 +55,7 @@
  * Server with good latency.
  */
 
-.connection-tester .connection-tester-report table.results tr.quality1 .server-rtt {
+.connection-tester .connection-tester-report table.results tr.quality1 .server-result {
     background: rgba(192, 192, 0, 0.5);
 }
 
@@ -63,7 +63,7 @@
  * Server with poor (but tolerable) latency.
  */
 
-.connection-tester .connection-tester-report table.results tr.quality2 .server-rtt {
+.connection-tester .connection-tester-report table.results tr.quality2 .server-result {
     background: rgba(192, 128, 0, 0.5);
 }
 
@@ -71,7 +71,7 @@
  * Server with extremely poor latency.
  */
 
-.connection-tester .connection-tester-report table.results tr.quality3 .server-rtt {
+.connection-tester .connection-tester-report table.results tr.quality3 .server-result {
     background: rgba(192, 0, 0, 0.5);
 }
 
@@ -79,7 +79,7 @@
  * Completely unreachable server.
  */
 
-.connection-tester .connection-tester-report table.results tr.quality4 .server-rtt {
+.connection-tester .connection-tester-report table.results tr.quality4 .server-result {
     background: black;
     color: white;
 }

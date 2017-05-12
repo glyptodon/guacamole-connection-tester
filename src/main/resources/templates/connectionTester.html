@@ -17,14 +17,14 @@
                     'roundTripStatistics.median',
                     'roundTripStatistics.medianAbsoluteDeviation'
                 ]">
-                <td class="server-location">
+                <td class="server-name">
                     <img class="flag-icon" ng-show="result.server.country"
                          ng-src="app/ext/conntest/flags/{{result.server.country}}.png"
                          alt="{{result.server.country}}"/>
                     {{result.name}}
                 </td>
                 <td class="server-url"><a ng-href="{{result.server.url}}">{{result.server.url}}</a></td>
-                <td class="server-rtt">
+                <td class="server-result">
 
                     <!-- Round trip time statistics (if server is available) -->
                     <span ng-show="result.roundTripStatistics">
