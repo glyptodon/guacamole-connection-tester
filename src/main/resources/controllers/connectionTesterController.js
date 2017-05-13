@@ -61,6 +61,15 @@ angular.module('guacConntest').controller('connectionTesterController', ['$scope
     var CONCURRENCY = parseInt($routeParams.n) || 4;
 
     /**
+     * The set of all domains associated with active tests. Regardless of the
+     * desired level of concurrency, only one test is allowed per domain at
+     * any one time.
+     *
+     * @type Object.<String, Boolean>
+     */
+    var activeTests = {};
+
+    /**
      * Array of all final server test results.
      *
      * @type Result[]
@@ -124,6 +133,27 @@ angular.module('guacConntest').controller('connectionTesterController', ['$scope
     };
 
     /**
+     * Parses the given URL, returning the domain. If the URL cannot be parsed,
+     * null is returned.
+     *
+     * @param {String} url
+     *     The URL to parse.
+     *
+     * @returns {Boolean}
+     *     The domain within the given URL, or null if the URL cannot be
+     *     parsed.
+     */
+    var getDomain = function getDomain(url) {
+
+        // Match given URL against regex identifying the domain
+        var matches = /^[^\/]*\/\/([^\/]*)/.exec(url);
+
+        // Return domain only if found
+        return matches && matches[1];
+
+    };
+
+    /**
      * Returns an arbitrary niceness value indicating how subjectively good a
      * Guacamole connection is likely to be based on the given statistics,
      * where zero is the best possible connection, and higher values represent
@@ -175,6 +205,17 @@ angular.module('guacConntest').controller('connectionTesterController', ['$scope
         if (!result)
             return;
 
+        // If a test is already in progress for that domain, put the result
+        // back and wait
+        var domain = getDomain(result.server.url);
+        if (activeTests[domain]) {
+            results.unshift(result);
+            return;
+        }
+
+        // Mark test as active
+        activeTests[domain] = true;
+
         // Measure round trip statistics for current server
         statisticalMeasurementService.getRoundTripStatistics(result.server.url)
 
@@ -191,9 +232,45 @@ angular.module('guacConntest').controller('connectionTesterController', ['$scope
 
         // Test all remaining servers
         ['finally'](function testRemainingServers() {
+
+            // Mark test as complete
+            delete activeTests[domain];
             result.complete = true;
-            testServers(results);
+
+            // Spawn tests for remaining servers
+            spawnTests(results);
+
         });
+
+    };
+
+    /**
+     * Spawns a series of parallel tests for each of the servers associated
+     * with the incomplete results in the given array. The level of concurrency
+     * is dictated by the CONCURRENCY constant and is maintained each time this
+     * function is invoked: if the number of active tests falls below the
+     * desired level of concurrency, additional tests are started.
+     *
+     * NOTE: This function will modify the given array, removing result objects
+     * from the array while the tests are performed. It is unsafe to continue
+     * to use the array after this function has been invoked except to monitor
+     * progress.
+     *
+     * @param {Result[]} results
+     *     An array of incomplete results to populate. This array will be
+     *     gradually emptied as tests are performed.
+     */
+    var spawnTests = function spawnTests(results) {
+
+        // Count the number of tests currently running
+        var spawnCount = CONCURRENCY;
+        angular.forEach(activeTests, function countActiveTests() {
+            spawnCount--;
+        });
+
+        // Start as many tests as allowed
+        for (var i = 0; i < spawnCount; i++)
+            testServers(results);
 
     };
 
@@ -213,9 +290,7 @@ angular.module('guacConntest').controller('connectionTesterController', ['$scope
         });
 
         // Test all servers retrieved
-        var pendingResults = $scope.results.slice();
-        for (var i = 0; i < CONCURRENCY; i++)
-            testServers(pendingResults);
+        spawnTests($scope.results.slice());
 
     });
 
