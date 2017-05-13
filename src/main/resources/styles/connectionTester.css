@@ -18,9 +18,26 @@
  */
 
 .connection-tester .connection-tester-progress {
+    position: relative;
+    padding: 0.25em;
     text-align: center;
     font-style: italic;
     opacity: 0.75;
+}
+
+.connection-tester .connection-tester-progress .connection-tester-progress-bar {
+    position: absolute;
+    background: blue;
+    opacity: 0.25;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 0;
+    -webkit-transition: width 0.0625s;
+    -moz-transition:    width 0.0625s;
+    -ms-transition:     width 0.0625s;
+    -o-transition:      width 0.0625s;
+    transition:         width 0.0625s;
 }
 
 .connection-tester .connection-tester-report .server-name img.flag-icon {

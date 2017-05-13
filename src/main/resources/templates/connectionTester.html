@@ -1,12 +1,13 @@
 <div class="connection-tester-report">
 
-    <h1>{{'CONNTEST.SECTION_HEADER_RESULTS' | translate}}</h1>
-
     <!-- Connection test progress -->
     <div class="connection-tester-progress" ng-show="isRunning()">
+        <div class="connection-tester-progress-bar" ng-style="{ 'width': getProgressPercent() + '%' }"></div>
         <span translate="CONNTEST.INFO_TESTING_SERVER"
               translate-values="{ CURRENT: getCurrentServer(), TOTAL: getTotalServers() }"></span>
     </div>
+
+    <h1>{{'CONNTEST.SECTION_HEADER_RESULTS' | translate}}</h1>
 
     <!-- Connection testing results -->
     <table class="results">

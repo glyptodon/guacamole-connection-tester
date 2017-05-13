@@ -133,6 +133,16 @@ angular.module('guacConntest').controller('connectionTesterController', ['$scope
     };
 
     /**
+     * Returns the percentage of tests which have been completed.
+     *
+     * @returns {Number}
+     *     The percentage of tests which have been completed.
+     */
+    $scope.getProgressPercent = function getProgressPercent() {
+        return ($scope.getCurrentServer() - 1) / $scope.getTotalServers() * 100;
+    };
+
+    /**
      * Parses the given URL, returning the domain. If the URL cannot be parsed,
      * null is returned.
      *
