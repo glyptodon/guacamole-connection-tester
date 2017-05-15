@@ -17,12 +17,42 @@
  * under the License.
  */
 
+.connection-tester .connection-tester-progress-outer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: table;
+    background: white;
+}
+
+.connection-tester .connection-tester-progress-outer .connection-tester-progress-inner {
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
+}
+
+.connection-tester .connection-tester-welcome {
+    width: 80%;
+    max-width: 8in;
+    margin: 0 auto;
+}
+
+.connection-tester .connection-tester-welcome p {
+    text-align: left;
+}
+
 .connection-tester .connection-tester-progress {
     position: relative;
     padding: 0.25em;
     text-align: center;
     font-style: italic;
     opacity: 0.75;
+    border: 1px solid black;
+    width: 80%;
+    max-width: 4in;
+    margin: 0 auto;
 }
 
 .connection-tester .connection-tester-progress .connection-tester-progress-bar {
@@ -47,9 +77,15 @@
     border: 1px solid rgba(0, 0, 0, 0.25);
 }
 
+.connection-tester .connection-tester-report .server-name,
+.connection-tester .connection-tester-report .server-result,
 .connection-tester .connection-tester-report .server-url {
     white-space: nowrap;
+}
+
+.connection-tester .connection-tester-report .server-url {
     padding-right: 2em;
+    font-family: monospace;
 }
 
 .connection-tester .connection-tester-report table.results {

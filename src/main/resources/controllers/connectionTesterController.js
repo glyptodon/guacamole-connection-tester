@@ -133,13 +133,34 @@ angular.module('guacConntest').controller('connectionTesterController', ['$scope
     };
 
     /**
+     * Returns whether the connection test has been started. The connection
+     * test may or may not be running.
+     *
+     * @returns {Boolean}
+     *     true if the connection test has been started, false otherwise.
+     */
+    $scope.hasStarted = function hasStarted() {
+        return !!$scope.results.length;
+    };
+
+    /**
+     * Returns whether the connection test has finished.
+     *
+     * @returns {Boolean}
+     *     true if the connection test has finished, false otherwise.
+     */
+    $scope.isComplete = function isComplete() {
+        return $scope.hasStarted() && !$scope.isRunning();
+    };
+
+    /**
      * Returns the percentage of tests which have been completed.
      *
      * @returns {Number}
      *     The percentage of tests which have been completed.
      */
     $scope.getProgressPercent = function getProgressPercent() {
-        return ($scope.getCurrentServer() - 1) / $scope.getTotalServers() * 100;
+        return $scope.getCurrentServer() / ($scope.getTotalServers() + 1) * 100;
     };
 
     /**
@@ -284,24 +305,34 @@ angular.module('guacConntest').controller('connectionTesterController', ['$scope
 
     };
 
-    // Test all servers once the server map has been retrieved
-    connectionTestService.getServers()
-    .then(function receivedServerList(servers) {
+    /**
+     * Starts the connection test. The list of available servers is retrieved
+     * via REST, and each defined server is tested to determine the latency
+     * characteristics of the network connection between the user and that
+     * server.
+     */
+    $scope.startTest = function startTest() {
 
-        // Reset any past results
-        $scope.results = [];
+        // Test all servers once the server map has been retrieved
+        connectionTestService.getServers()
+        .then(function receivedServerList(servers) {
 
-        // Create skeleton test results for all servers
-        angular.forEach(servers, function createPendingResult(server, name) {
-            $scope.results.push(new Result({
-                'name'   : name,
-                'server' : server
-            }));
+            // Reset any past results
+            $scope.results = [];
+
+            // Create skeleton test results for all servers
+            angular.forEach(servers, function createPendingResult(server, name) {
+                $scope.results.push(new Result({
+                    'name'   : name,
+                    'server' : server
+                }));
+            });
+
+            // Test all servers retrieved
+            spawnTests($scope.results.slice());
+
         });
 
-        // Test all servers retrieved
-        spawnTests($scope.results.slice());
-
-    });
+    };
 
 }]);

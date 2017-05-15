@@ -1,17 +1,21 @@
 {
 
-    "DATA_SOURCE_CONNTEST" : {
-        "NAME" : "Connection Testing Tool"
-    },
-
     "CONNTEST" : {
+        "ACTION_START_TEST"        : "Start Test",
         "INFO_SERVER_UNAVAILABLE"  : "Unavailable",
         "INFO_SERVER_TEST_PENDING" : "Pending...",
+        "HELP_TOOL_DESCRIPTION"    : "This tool will test the latency of available servers, automatically determining which server should provide the best performance given current network conditions.",
+        "HELP_STARTING_TEST"       : "To begin, click \"Start Test\".",
         "INFO_TESTING_SERVER"      : "Testing server {CURRENT} of {TOTAL} ...",
+        "NAME"                     : "Connection Testing Tool",
         "SECTION_HEADER_RESULTS"   : "Connection Test Results",
         "TABLE_HEADER_RESULT"      : "Result",
         "TABLE_HEADER_SERVER"      : "Server",
         "TABLE_HEADER_URL"         : "URL"
+    },
+
+    "DATA_SOURCE_CONNTEST" : {
+        "NAME" : "@:CONNTEST.NAME"
     }
 
 }

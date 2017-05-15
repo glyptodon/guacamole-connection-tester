@@ -1,71 +1,87 @@
-<div class="connection-tester-report">
-
-    <!-- Connection test progress -->
-    <div class="connection-tester-progress" ng-show="isRunning()">
-        <div class="connection-tester-progress-bar" ng-style="{ 'width': getProgressPercent() + '%' }"></div>
-        <span translate="CONNTEST.INFO_TESTING_SERVER"
-              translate-values="{ CURRENT: getCurrentServer(), TOTAL: getTotalServers() }"></span>
-    </div>
-
-    <h1>{{'CONNTEST.SECTION_HEADER_RESULTS' | translate}}</h1>
+<div class="connection-tester-content">
 
     <!-- Connection testing results -->
-    <table class="results">
-        <thead>
-            <tr>
-                <th>{{'CONNTEST.TABLE_HEADER_SERVER' | translate}}</th>
-                <th>{{'CONNTEST.TABLE_HEADER_URL' | translate}}</th>
-                <th>{{'CONNTEST.TABLE_HEADER_RESULT' | translate}}</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr ng-class="{
-                    'pending'  : !result.complete,
-                    'quality0' : result.niceness === 0,
-                    'quality1' : result.niceness === 1,
-                    'quality2' : result.niceness === 2,
-                    'quality3' : result.niceness === 3,
-                    'quality4' : result.niceness === 4
-                }"
-                ng-repeat="result in results | orderBy: [
-                    'niceness',
-                    'roundTripStatistics.median',
-                    'roundTripStatistics.medianAbsoluteDeviation',
-                    'name'
-                ]">
-                <td class="server-name">
-                    <img class="flag-icon" ng-show="result.server.country"
-                         ng-src="app/ext/conntest/flags/{{result.server.country}}.png"
-                         alt="{{result.server.country}}"/>
-                    {{result.name}}
-                </td>
-                <td class="server-url"><a ng-href="{{result.server.url}}">{{result.server.url}}</a></td>
-                <td class="server-result">
+    <div class="connection-tester-report" ng-show="isComplete()">
+        <h1>{{'CONNTEST.SECTION_HEADER_RESULTS' | translate}}</h1>
+        <table class="results">
+            <thead>
+                <tr>
+                    <th>{{'CONNTEST.TABLE_HEADER_SERVER' | translate}}</th>
+                    <th>{{'CONNTEST.TABLE_HEADER_URL' | translate}}</th>
+                    <th>{{'CONNTEST.TABLE_HEADER_RESULT' | translate}}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-class="{
+                        'pending'  : !result.complete,
+                        'quality0' : result.niceness === 0,
+                        'quality1' : result.niceness === 1,
+                        'quality2' : result.niceness === 2,
+                        'quality3' : result.niceness === 3,
+                        'quality4' : result.niceness === 4
+                    }"
+                    ng-repeat="result in results | orderBy: [
+                        'niceness',
+                        'roundTripStatistics.median',
+                        'roundTripStatistics.medianAbsoluteDeviation',
+                        'name'
+                    ]">
+                    <td class="server-name">
+                        <img class="flag-icon" ng-show="result.server.country"
+                             ng-src="app/ext/conntest/flags/{{result.server.country}}.png"
+                             alt="{{result.server.country}}"/>
+                        {{result.name}}
+                    </td>
+                    <td class="server-url"><a ng-href="{{result.server.url}}">{{result.server.url}}</a></td>
+                    <td class="server-result">
 
-                    <!-- Final result statistics, available only when result is complete -->
-                    <span ng-show="result.complete">
+                        <!-- Final result statistics, available only when result is complete -->
+                        <span ng-show="result.complete">
 
-                        <!-- Round trip time statistics (if server is available) -->
-                        <span ng-show="result.roundTripStatistics">
-                              {{result.roundTripStatistics.median | number: 0}} ms
-                            ± {{result.roundTripStatistics.medianAbsoluteDeviation | number: 0}}
+                            <!-- Round trip time statistics (if server is available) -->
+                            <span ng-show="result.roundTripStatistics">
+                                  {{result.roundTripStatistics.median | number: 0}} ms
+                                ± {{result.roundTripStatistics.medianAbsoluteDeviation | number: 0}}
+                            </span>
+
+                            <!-- Server unavailable warning -->
+                            <span ng-hide="result.roundTripStatistics">
+                                {{'CONNTEST.INFO_SERVER_UNAVAILABLE' | translate}}
+                            </span>
+
                         </span>
 
-                        <!-- Server unavailable warning -->
-                        <span ng-hide="result.roundTripStatistics">
-                            {{'CONNTEST.INFO_SERVER_UNAVAILABLE' | translate}}
+                        <!-- Test result pending -->
+                        <span ng-hide="result.complete">
+                            {{'CONNTEST.INFO_SERVER_TEST_PENDING' | translate}}
                         </span>
 
-                    </span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 
-                    <!-- Test result pending -->
-                    <span ng-hide="result.complete">
-                        {{'CONNTEST.INFO_SERVER_TEST_PENDING' | translate}}
-                    </span>
+    <!-- Progress dialog -->
+    <div class="connection-tester-progress-outer" ng-hide="isComplete()">
+        <div class="connection-tester-progress-inner">
 
-                </td>
-            </tr>
-        </tbody>
-    </table>
+            <!-- Welcome/start prompt -->
+            <div class="connection-tester-welcome" ng-hide="hasStarted()">
+                <h1>{{'CONNTEST.NAME' | translate}}</h1>
+                <p>{{'CONNTEST.HELP_TOOL_DESCRIPTION' | translate}}</p>
+                <p>{{'CONNTEST.HELP_STARTING_TEST' | translate}}</p>
+                <button ng-click="startTest()">{{'CONNTEST.ACTION_START_TEST' | translate}}</button>
+            </div>
+
+            <!-- Connection test progress -->
+            <div class="connection-tester-progress" ng-show="isRunning()">
+                <div class="connection-tester-progress-bar" ng-style="{ 'width': getProgressPercent() + '%' }"></div>
+                <span translate="CONNTEST.INFO_TESTING_SERVER"
+                      translate-values="{ CURRENT: getCurrentServer(), TOTAL: getTotalServers() }"></span>
+            </div>
+
+        </div>
+    </div>
 
 </div>
