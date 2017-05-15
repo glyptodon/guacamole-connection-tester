@@ -68,6 +68,17 @@ angular.module('guacConntest').factory('statisticalMeasurementService', ['$injec
      */
     var DESIRED_DEVIATION = 0.25;
 
+    /**
+     * The desired mean absolute deviation relative to the calculated mean
+     * round trip time. Unlike DESIRED_DEVIATION, which is proportionate, the
+     * minimum deviation is compared absolutely, avoiding excess sampling when
+     * servers are very responsive.
+     *
+     * @constant
+     * @type Number
+     */
+    var MINIMUM_DEVIATION = 4;
+
     var service = {};
 
     /**
@@ -89,7 +100,7 @@ angular.module('guacConntest').factory('statisticalMeasurementService', ['$injec
 
         // Calculate the deviation which would be considered accurate for the
         // current sample set
-        var desiredDeviation = Math.abs(stats.median * DESIRED_DEVIATION);
+        var desiredDeviation = Math.max(MINIMUM_DEVIATION, Math.abs(stats.median * DESIRED_DEVIATION));
 
         // The sample set is accurate if the overall set appears to be within
         // the minimum desired deviation
