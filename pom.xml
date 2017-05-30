@@ -196,6 +196,7 @@
 
                 <configuration>
                     <excludes>
+                        <exclude>README.md</exclude>
                         <exclude>**/*.json</exclude>
                         <exclude>src/licenses/**/*</exclude>
                         <exclude>src/main/resources/templates/*.html</exclude>
