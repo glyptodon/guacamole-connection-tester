@@ -24,7 +24,7 @@ angular.module('guacConntest').factory('statisticalMeasurementService', ['$injec
         function statisticalMeasurementService($injector) {
 
     // Required services
-    var connectionTestService = $injector.get('connectionTestService');
+    var timingService = $injector.get('timingService');
     var $q = $injector.get('$q');
 
     // Required types
@@ -135,7 +135,7 @@ angular.module('guacConntest').factory('statisticalMeasurementService', ['$injec
     var gatherSamples = function gatherSamples(serverUrl, samples, request, startTime) {
 
         // Ping the Guacamole server
-        connectionTestService.getTimestamps(serverUrl, MAX_SAMPLE_TIME)
+        timingService.getTimestamps(serverUrl, MAX_SAMPLE_TIME)
 
         // If the ping was successful, update the statistics, possibly pinging
         // the server again

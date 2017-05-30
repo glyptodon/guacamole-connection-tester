@@ -25,7 +25,7 @@ angular.module('guacConntest').controller('connectionTesterController', ['$scope
 
     // Required services
     var $routeParams                  = $injector.get('$routeParams');
-    var connectionTestService         = $injector.get('connectionTestService');
+    var configService                 = $injector.get('configService');
     var statisticalMeasurementService = $injector.get('statisticalMeasurementService');
 
     // Required types
@@ -314,7 +314,7 @@ angular.module('guacConntest').controller('connectionTesterController', ['$scope
     $scope.startTest = function startTest() {
 
         // Test all servers once the server map has been retrieved
-        connectionTestService.getServers()
+        configService.getServers()
         .then(function receivedServerList(servers) {
 
             // Reset any past results

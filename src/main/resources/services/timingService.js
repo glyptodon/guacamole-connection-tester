@@ -18,9 +18,9 @@
  */
 
 /**
- * Service for interacting with the connection testing REST API.
+ * Service for measuring round trip tipe using the connection testing REST API.
  */
-angular.module('guacConntest').factory('connectionTestService', ['$injector',
+angular.module('guacConntest').factory('timingService', ['$injector',
         function connectionTestService($injector) {
 
     // Required services
@@ -31,41 +31,6 @@ angular.module('guacConntest').factory('connectionTestService', ['$injector',
     var TimestampPair = $injector.get('TimestampPair');
 
     var service = {};
-
-    /**
-     * Makes a request to the REST API to get the list of Guacamole servers
-     * available for testing, returning a promise that provides an map of
-     * @link{Server} objects if successful.
-     *
-     * @returns {Promise.<Object.<String, Server[]>>}
-     *     A promise which will resolve with a map of @link{Server}
-     *     objects, where the key of each entry is the human-reable name for
-     *     the Guacamole server described by the corresponding @link{Server}
-     *     object.
-     */
-    service.getServers = function getServers() {
-
-        var request = $q.defer();
-
-        // Attempt to retrieve server list
-        $http({
-            method  : 'GET',
-            url     : 'api/ext/conntest/servers'
-        })
-
-        // If successful, resolve promise with map of servers
-        .then(function serverListRetrievalSucceeded(response) {
-            request.resolve(response.data);
-        })
-
-        // If unsuccessful, resolve with empty map
-        ['catch'](function serverListRetrievalFailed() {
-            request.resolve({});
-        });
-
-        return request.promise;
-
-    };
 
     /**
      * Makes a request to the REST API for the current server time, returning
