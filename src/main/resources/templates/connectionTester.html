@@ -20,7 +20,7 @@
                         'quality3' : result.niceness === 3,
                         'quality4' : result.niceness === 4
                     }"
-                    ng-repeat="result in results | orderBy: [
+                    ng-repeat="result in getResults() | orderBy: [
                         'niceness',
                         'roundTripStatistics.median',
                         'roundTripStatistics.medianAbsoluteDeviation',
