@@ -38,13 +38,19 @@ angular.module('guacConntest').controller('connectionTesterController', ['$scope
     var CONCURRENCY = parseInt($routeParams.n) || 4;
 
     /**
-     * Array of all final server test results.
+     * The current status of the connection test.
+     *
+     * @type Status
+     */
+    $scope.status = connectionTestingService.getStatus();
+
+    /**
+     * The final results of the connection test, or null if the connection test
+     * is not yet completed.
      *
      * @type Result[]
      */
-    $scope.getResults = function getResults() {
-        return connectionTestingService.currentResults;
-    };
+    $scope.results = null;
 
     /**
      * Returns the place value (not index) of the server being tested relative
@@ -58,69 +64,10 @@ angular.module('guacConntest').controller('connectionTesterController', ['$scope
      */
     $scope.getCurrentServer = function getCurrentServer() {
 
-        var incompleteServers = 0;
-
-        // Count the number of incomplete results
-        for (var i = 0; i < connectionTestingService.currentResults.length; i++) {
-            if (!connectionTestingService.currentResults[i].complete)
-                incompleteServers++;
-        }
-
         // Return (fake) place value of first incomplete server, as if all
         // completed servers were first in the list
-        return connectionTestingService.currentResults.length - incompleteServers + 1;
+        return $scope.status.total - $scope.status.remaining + 1;
 
-    };
-
-    /**
-     * Returns the total number of servers available, including those which
-     * have not yet been tested.
-     *
-     * @returns {Number}
-     *     The total number of servers available.
-     */
-    $scope.getTotalServers = function getTotalServers() {
-        return connectionTestingService.currentResults.length;
-    };
-
-    /**
-     * Returns whether a server test is currently running.
-     *
-     * @returns {Boolean}
-     *     true if a server test is currently running, false otherwise.
-     */
-    $scope.isRunning = function isRunning() {
-
-        // Tests are running if at least one result is incomplete
-        for (var i = 0; i < connectionTestingService.currentResults.length; i++) {
-            if (!connectionTestingService.currentResults[i].complete)
-                return true;
-        }
-
-        // Tests are not running if all results are complete
-        return false;
-
-    };
-
-    /**
-     * Returns whether the connection test has been started. The connection
-     * test may or may not be running.
-     *
-     * @returns {Boolean}
-     *     true if the connection test has been started, false otherwise.
-     */
-    $scope.hasStarted = function hasStarted() {
-        return !!connectionTestingService.currentResults.length;
-    };
-
-    /**
-     * Returns whether the connection test has finished.
-     *
-     * @returns {Boolean}
-     *     true if the connection test has finished, false otherwise.
-     */
-    $scope.isComplete = function isComplete() {
-        return $scope.hasStarted() && !$scope.isRunning();
     };
 
     /**
@@ -130,7 +77,7 @@ angular.module('guacConntest').controller('connectionTesterController', ['$scope
      *     The percentage of tests which have been completed.
      */
     $scope.getProgressPercent = function getProgressPercent() {
-        return $scope.getCurrentServer() / ($scope.getTotalServers() + 1) * 100;
+        return $scope.getCurrentServer() / $scope.status.total * 100;
     };
 
     /**
@@ -140,7 +87,17 @@ angular.module('guacConntest').controller('connectionTesterController', ['$scope
      * server.
      */
     $scope.startTest = function startTest() {
-        connectionTestingService.getResults(CONCURRENCY);
+        connectionTestingService.startTest(CONCURRENCY);
     };
+
+    // Display results when ready
+    connectionTestingService.getResults().then(function testComplete(results) {
+        $scope.results = results;
+    })
+
+    // Update status as test continues
+    ['finally'](null, function testProgress(status) {
+        $scope.status = status;
+    });
 
 }]);

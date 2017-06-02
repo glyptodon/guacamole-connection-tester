@@ -32,6 +32,7 @@ angular.module('guacConntest').factory('connectionTestingService', ['$injector',
 
     // Required types
     var Result = $injector.get('Result');
+    var Status = $injector.get('Status');
 
     /**
      * The number of bins to split servers into based on approximate subjective
@@ -63,19 +64,19 @@ angular.module('guacConntest').factory('connectionTestingService', ['$injector',
 
     /**
      * A deferred object, as returned by the $q service, representing the
-     * results of a connection test, which may currently be in progress. If no
-     * test has been started yet, this will be null.
+     * results of a connection test, which may currently be in progress.
      *
      * @type deferred
      */
-    var deferredResults = null;
+    var deferredResults = $q.defer();
 
     /**
-     * Array of all final server test results.
+     * Array of all current server test results, or null if the server tests
+     * have not yet started.
      *
      * @type Result[]
      */
-    service.currentResults = [];
+    var currentResults = null;
 
     /**
      * Parses the given URL, returning the domain. If the URL cannot be parsed,
@@ -126,6 +127,30 @@ angular.module('guacConntest').factory('connectionTestingService', ['$injector',
         // subjectively best possible connection and higher values are
         // subjectively worse
         return Math.min(NICENESS_BINS - 1, Math.floor(logarithmicRTT * (NICENESS_BINS - 1)));
+
+    };
+
+    /**
+     * Returns the number of servers remaining to be tested. If the test has
+     * completed, or is not yet running, this will be zero.
+     *
+     * @returns {Number}
+     *     The number of servers remaining to be tested.
+     */
+    var getRemaining = function getRemaining() {
+
+        // No servers remain if the test is not even running
+        if (!currentResults)
+            return 0;
+
+        // Count the number of tests remaining
+        var remaining = currentResults.length;
+        angular.forEach(currentResults, function countRemaining(result) {
+            if (result.complete)
+                remaining--;
+        });
+
+        return remaining;
 
     };
 
@@ -187,18 +212,11 @@ angular.module('guacConntest').factory('connectionTestingService', ['$injector',
             result.complete = true;
 
             // Notify that a test has completed
-            deferredResults.notify();
-
-            // Count the number of tests remaining
-            var remaining = service.currentResults.length;
-            angular.forEach(service.currentResults, function countRemaining(result) {
-                if (result.complete)
-                    remaining--;
-            });
+            deferredResults.notify(service.getStatus());
 
             // Resolve promise once all tests have completed
-            if (!remaining)
-                deferredResults.resolve(service.currentResults);
+            if (!getRemaining())
+                deferredResults.resolve(currentResults);
 
             // Spawn tests for remaining servers
             spawnTests(results, concurrency);
@@ -239,11 +257,68 @@ angular.module('guacConntest').factory('connectionTestingService', ['$injector',
     };
 
     /**
+     * Returns an object representing the current status of the connection
+     * test. The returned object is a snapshot of the connection test status.
+     * To continuously watch the status of the connection test, this function
+     * must be continuously invoked, or a notification callback must be
+     * supplied to the promise returned by getResults().
+     *
+     * @returns {Status}
+     *     An object representing the current status of the connection test.
+     */
+    service.getStatus = function getStatus() {
+
+        // Not yet started
+        if (!currentResults) {
+            return new Status({
+                'remaining' : 0,
+                'total'     : 0,
+                'complete'  : false,
+                'running'   : false,
+                'started'   : false
+            });
+        }
+
+        // In-progress / Complete
+        var remaining = getRemaining();
+        return new Status({
+            'remaining' : remaining,
+            'total'     : currentResults.length,
+            'complete'  : remaining === 0,
+            'running'   : remaining !== 0,
+            'started'   : true
+        });
+
+    };
+
+    /**
      * Returns a promise which resolves with the results of the connection
      * test, performing that test first if necessary. The promise will be
-     * notified each time a test is completed. While the test is underway, the
-     * incomplete results will be available under the currentResults property.
-     * 
+     * notified each time a test is completed. The status object passed to the
+     * promise during notification may also be retrieved manually through
+     * calling getStatus().
+     *
+     * Invoking this function will NOT implicitly start the connection test.
+     * Though a promise will be returned, that promise will not be resolved
+     * until the connection test has completed, and that connection test will
+     * not start until startTest() has been explicitly invoked.
+     *
+     * @returns {Promise.<Result[]>}
+     *     A promise which resolves with an array of completed results once all
+     *     tests have completed.
+     */
+    service.getResults = function getResults() {
+        return deferredResults.promise;
+    };
+
+    /**
+     * Starts the connection test, if the connection test has not already been
+     * started. The current status of the connection test can be obeserved
+     * through invoking getStatus() or through receiving notifications via the
+     * promise returned by getResults(). The promise returned by getResults()
+     * will be resolved with the results of the test once the test has
+     * completed.
+     *
      * When performing the test, the list of available servers is retrieved via
      * REST, and each defined server is tested to determine the latency
      * characteristics of the network connection between the user and that
@@ -252,44 +327,35 @@ angular.module('guacConntest').factory('connectionTestingService', ['$injector',
      * @param {Number} concurrency
      *     The desired number of concurrent tests. If the number of active
      *     tests falls below this value, additional tests will be started.
-     *
-     * @returns {Promise.<Result[]>}
-     *     A promise which resolves with an array of completed results once all
-     *     tests have completed.
      */
-    service.getResults = function getResults(concurrency) {
+    service.startTest = function startTest(concurrency) {
 
-        // Start a new test only if no such test has been started
-        if (!deferredResults) {
+        // Do nothing if a test has already been started
+        if (currentResults)
+            return;
 
-            deferredResults = $q.defer();
+        // Test all servers once the server map has been retrieved
+        configService.getServers()
+        .then(function receivedServerList(servers) {
 
-            // Test all servers once the server map has been retrieved
-            configService.getServers()
-            .then(function receivedServerList(servers) {
+            // Reset any past results
+            currentResults = [];
 
-                // Reset any past results
-                service.currentResults = [];
-
-                // Create skeleton test results for all servers
-                angular.forEach(servers, function createPendingResult(server, name) {
-                    service.currentResults.push(new Result({
-                        'name'   : name,
-                        'server' : server
-                    }));
-                });
-
-                // Notify that the tests are starting
-                deferredResults.notify();
-
-                // Test all servers retrieved
-                spawnTests(service.currentResults.slice(), concurrency);
-
+            // Create skeleton test results for all servers
+            angular.forEach(servers, function createPendingResult(server, name) {
+                currentResults.push(new Result({
+                    'name'   : name,
+                    'server' : server
+                }));
             });
 
-        }
+            // Notify that the tests are starting
+            deferredResults.notify(service.getStatus());
 
-        return deferredResults.promise;
+            // Test all servers retrieved
+            spawnTests(currentResults.slice(), concurrency);
+
+        });
 
     };
 

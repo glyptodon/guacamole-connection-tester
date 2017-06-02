@@ -1,7 +1,7 @@
 <div class="connection-tester-content">
 
     <!-- Connection testing results -->
-    <div class="connection-tester-report" ng-show="isComplete()">
+    <div class="connection-tester-report" ng-show="status.complete">
         <h1>{{'CONNTEST.SECTION_HEADER_RESULTS' | translate}}</h1>
         <table class="results">
             <thead>
@@ -20,7 +20,7 @@
                         'quality3' : result.niceness === 3,
                         'quality4' : result.niceness === 4
                     }"
-                    ng-repeat="result in getResults() | orderBy: [
+                    ng-repeat="result in results | orderBy: [
                         'niceness',
                         'roundTripStatistics.median',
                         'roundTripStatistics.medianAbsoluteDeviation',
@@ -63,11 +63,11 @@
     </div>
 
     <!-- Progress dialog -->
-    <div class="connection-tester-progress-outer" ng-hide="isComplete()">
+    <div class="connection-tester-progress-outer" ng-hide="status.complete">
         <div class="connection-tester-progress-inner">
 
             <!-- Welcome/start prompt -->
-            <div class="connection-tester-welcome" ng-hide="hasStarted()">
+            <div class="connection-tester-welcome" ng-hide="status.started">
                 <h1>{{'CONNTEST.NAME' | translate}}</h1>
                 <p>{{'CONNTEST.HELP_TOOL_DESCRIPTION' | translate}}</p>
                 <p>{{'CONNTEST.HELP_STARTING_TEST' | translate}}</p>
@@ -75,10 +75,10 @@
             </div>
 
             <!-- Connection test progress -->
-            <div class="connection-tester-progress" ng-show="isRunning()">
+            <div class="connection-tester-progress" ng-show="status.running">
                 <div class="connection-tester-progress-bar" ng-style="{ 'width': getProgressPercent() + '%' }"></div>
                 <span translate="CONNTEST.INFO_TESTING_SERVER"
-                      translate-values="{ CURRENT: getCurrentServer(), TOTAL: getTotalServers() }"></span>
+                      translate-values="{ CURRENT: getCurrentServer(), TOTAL: status.total }"></span>
             </div>
 
         </div>
