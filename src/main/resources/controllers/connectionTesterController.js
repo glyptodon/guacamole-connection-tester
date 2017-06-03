@@ -28,14 +28,13 @@ angular.module('guacConntest').controller('connectionTesterController', ['$scope
     var connectionTestingService = $injector.get('connectionTestingService');
 
     /**
-     * The number of tests to run in parallel. This may be overridden through
-     * specifying the "n" parameter in the URL. By default, four servers are
-     * tested at a time.
+     * The number of tests to run in parallel, as specified by the "n"
+     * parameter in the URL. By default, the level of concurrency is dictated
+     * by the connection testing service.
      *
-     * @constant
      * @type Number
      */
-    var CONCURRENCY = parseInt($routeParams.n) || 4;
+    var desiredConcurrency = $routeParams.n && parseInt($routeParams.n);
 
     /**
      * The current status of the connection test.
@@ -87,7 +86,7 @@ angular.module('guacConntest').controller('connectionTesterController', ['$scope
      * server.
      */
     $scope.startTest = function startTest() {
-        connectionTestingService.startTest(CONCURRENCY);
+        connectionTestingService.startTest(desiredConcurrency);
     };
 
     // Display results when ready

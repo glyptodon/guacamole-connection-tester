@@ -54,6 +54,15 @@ angular.module('guacConntest').factory('connectionTestingService', ['$injector',
     var WORST_TOLERABLE_LATENCY = 220;
 
     /**
+     * The number of tests to run in parallel, if the concurrency level is not
+     * overridden when calling startTest().
+     *
+     * @constant
+     * @type Number
+     */
+    var DEFAULT_CONCURRENCY = 4;
+
+    /**
      * The set of all domains associated with active tests. Regardless of the
      * desired level of concurrency, only one test is allowed per domain at
      * any one time.
@@ -324,7 +333,7 @@ angular.module('guacConntest').factory('connectionTestingService', ['$injector',
      * characteristics of the network connection between the user and that
      * server.
      *
-     * @param {Number} concurrency
+     * @param {Number} [concurrency=4]
      *     The desired number of concurrent tests. If the number of active
      *     tests falls below this value, additional tests will be started.
      */
@@ -353,7 +362,7 @@ angular.module('guacConntest').factory('connectionTestingService', ['$injector',
             deferredResults.notify(service.getStatus());
 
             // Test all servers retrieved
-            spawnTests(currentResults.slice(), concurrency);
+            spawnTests(currentResults.slice(), concurrency || DEFAULT_CONCURRENCY);
 
         });
 
