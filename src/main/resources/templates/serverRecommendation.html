@@ -1,3 +1,19 @@
 <div class="connection-tester-recommendation" ng-show="recommendation">
-    Recommendation: <a ng-href="{{recommendation.url}}">{{recommendation.url}}</a>
+
+    <p>Recommendation:</p>
+
+    <table>
+        <tr>
+            <td class="server-name">
+                <img class="flag-icon" ng-show="recommendation.server.country"
+                     ng-src="app/ext/conntest/flags/{{recommendation.server.country}}.png"
+                     alt="{{recommendation.server.country}}"/>
+                {{recommendation.name}}
+            </td>
+            <td class="server-url">
+                <a ng-href="{{recommendation.server.url}}">{{recommendation.server.url}}</a>
+            </td>
+        </tr>
+    </table>
+
 </div>

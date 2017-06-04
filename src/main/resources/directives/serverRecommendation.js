@@ -71,11 +71,11 @@ angular.module('guacConntest').directive('guacServerRecommendation', ['$injector
     config.controller = ['$scope', function guacServerRecommendationController($scope) {
 
         /**
-         * The Guacamole server that is recommended based on a connection test,
-         * or null if the connection has not yet run or the current server is
-         * acceptable.
+         * The Result describing the Guacamole server that is recommended based
+         * on a connection test, or null if the connection has not yet run or
+         * the current server is acceptable.
          *
-         * @type Server
+         * @type Result
          */
         $scope.recommendation = null;
 
@@ -119,7 +119,7 @@ angular.module('guacConntest').directive('guacServerRecommendation', ['$injector
                 return;
 
             // Recommend a better server
-            $scope.recommendation = alternatives[0].server;
+            $scope.recommendation = alternatives[0];
 
         });
 

@@ -20,13 +20,40 @@
 .connection-tester-recommendation {
 
     background: white;
-    border: 1px solid black;
+    border: 1px solid rgba(0, 0, 0, 0.5);
+    box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.25);
     padding: 0.5em;
     margin: 0.5em;
+
+    font-size: 0.8em;
+
+    width: 100%;
+    max-width: 4in;
 
     position: fixed;
     right: 0;
     bottom: 0;
     z-index: 1;
 
+}
+
+.connection-tester-recommendation p {
+    margin: 0.5em;
+}
+
+.connection-tester-recommendation table {
+    margin: 0.5em auto;
+}
+
+.connection-tester-recommendation .server-name img.flag-icon {
+    box-sizing: content-box;
+    max-width: 24px;
+    margin: 0 0.25em;
+    border: 1px solid rgba(0, 0, 0, 0.25);
+}
+
+.connection-tester-recommendation .server-name,
+.connection-tester-recommendation .server-url {
+    padding: 0.5em;
+    white-space: nowrap;
 }
