@@ -22,7 +22,7 @@
  * Guacamole servers.
  */
 angular.module('guacConntest', [
-    // No dependencies yet
+    'storage'
 ]);
 
 // Ensure the guacConntest module is loaded along with the rest of the app

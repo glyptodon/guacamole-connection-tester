@@ -28,6 +28,7 @@ angular.module('guacConntest').directive('guacServerRecommendation', ['$injector
     // Required services
     var $window                  = $injector.get('$window');
     var connectionTestingService = $injector.get('connectionTestingService');
+    var sessionStorageFactory    = $injector.get('sessionStorageFactory');
 
     /**
      * The URL of the Guacamole server currently in use.
@@ -36,6 +37,14 @@ angular.module('guacConntest').directive('guacServerRecommendation', ['$injector
      * @type String
      */
     var CURRENT_URL = $window.location.origin + $window.location.pathname + '/';
+
+    /**
+     * Getter/setter which retrieves or sets whether the server recommendation
+     * notification (this directive) has been dismissed.
+     *
+     * @type Function
+     */
+    var dismissed = sessionStorageFactory.create(false);
 
     /**
      * Comparator which sorts connection test results in ascending order of
@@ -80,10 +89,22 @@ angular.module('guacConntest').directive('guacServerRecommendation', ['$injector
         $scope.recommendation = null;
 
         /**
+         * Returns whether the server recommendation notification (this
+         * directive) should be shown.
+         *
+         * @returns {Boolean}
+         *     true if the server recommendation notification should be shown,
+         *     false otherwise.
+         */
+        $scope.isVisible = function isVisible() {
+            return $scope.recommendation && !dismissed();
+        };
+
+        /**
          * Ignores the current server recommendation, hiding this directive.
          */
         $scope.ignore = function ignore() {
-            $scope.recommendation = null;
+            dismissed(true);
         };
 
         // Automatically start test, if not already started
