@@ -4,6 +4,7 @@
         "ACTION_START_TEST"        : "Start Test",
         "INFO_SERVER_UNAVAILABLE"  : "Unavailable",
         "INFO_SERVER_TEST_PENDING" : "Pending...",
+        "HELP_BETTER_SERVER"       : "After testing the latency of available servers from your network, the following server was identified as a better alternative to the server you are currently using:",
         "HELP_TOOL_DESCRIPTION"    : "This tool will test the latency of available servers, automatically determining which server should provide the best performance given current network conditions.",
         "HELP_STARTING_TEST"       : "To begin, click \"Start Test\".",
         "INFO_TESTING_SERVER"      : "Testing server {CURRENT} of {TOTAL} ...",
