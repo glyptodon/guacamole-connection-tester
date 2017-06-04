@@ -79,6 +79,13 @@ angular.module('guacConntest').directive('guacServerRecommendation', ['$injector
          */
         $scope.recommendation = null;
 
+        /**
+         * Ignores the current server recommendation, hiding this directive.
+         */
+        $scope.ignore = function ignore() {
+            $scope.recommendation = null;
+        };
+
         // Automatically start test, if not already started
         connectionTestingService.startTest();
 

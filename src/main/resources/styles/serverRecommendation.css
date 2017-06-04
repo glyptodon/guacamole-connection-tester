@@ -57,3 +57,31 @@
     padding: 0.5em;
     white-space: nowrap;
 }
+
+.connection-tester-recommendation button.close {
+
+    border: none;
+    background: transparent;
+    box-shadow: none;
+    text-shadow: none;
+    min-width: 0;
+    padding: 0;
+    margin: 0;
+
+    float: right;
+    width: 1em;
+    height: 1em;
+
+    color: transparent;
+    background: url('app/ext/conntest/images/close.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+
+    opacity: 0.25;
+
+}
+
+.connection-tester-recommendation button.close:hover {
+    opacity: 0.5;
+}

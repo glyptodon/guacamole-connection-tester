@@ -30,6 +30,8 @@
         "templates/connectionTester.html" : "text/html",
         "templates/serverRecommendation.html" : "text/html",
 
+        "images/close.png" : "image/png",
+
         "flags/AD.png" : "image/png", "flags/AE.png" : "image/png",
         "flags/AF.png" : "image/png", "flags/AG.png" : "image/png",
         "flags/AI.png" : "image/png", "flags/AL.png" : "image/png",
