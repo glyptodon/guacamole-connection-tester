@@ -26,7 +26,7 @@
     <groupId>org.apache.guacamole</groupId>
     <artifactId>guacamole-connection-tester</artifactId>
     <packaging>jar</packaging>
-    <version>0.9.12-incubating</version>
+    <version>0.9.13-incubating</version>
     <name>guacamole-connection-tester</name>
     <url>http://guacamole.incubator.apache.org/</url>
 
@@ -226,7 +226,7 @@
         <dependency>
             <groupId>org.apache.guacamole</groupId>
             <artifactId>guacamole-ext</artifactId>
-            <version>0.9.12-incubating</version>
+            <version>0.9.13-incubating</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
