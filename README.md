@@ -120,9 +120,11 @@ the root of your deployment. For example, if Guacamole is deployed to
 
 Visiting the connection testing page does not require authentication. Any users
 visiting the URL will immediately see a welcome screen instructing them to
-click the "Start Test" button to start the test. Once the test has started,
-a progress bar will be displayed showing the current state of the test. The
-test should take less than one second per server on average.
+click the "Start Test" button to start the test. Alternatively, to start the
+test automatically without prompting, include the query parameter `auto=1`
+within the URL. Once the test has started, a progress bar will be displayed
+showing the current state of the test. The test should take less than one
+second per server on average.
 
 Once the test has completed, a table of results will be displayed listing all
 available servers in order of responsiveness. Connection quality is ranked and
