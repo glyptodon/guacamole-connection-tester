@@ -67,7 +67,7 @@
         <div class="connection-tester-progress-inner">
 
             <!-- Welcome/start prompt -->
-            <div class="connection-tester-welcome" ng-hide="status.started">
+            <div class="connection-tester-welcome" ng-hide="!isPromptVisible()">
                 <h1>{{'CONNTEST.NAME' | translate}}</h1>
                 <p>{{'CONNTEST.HELP_TOOL_DESCRIPTION' | translate}}</p>
                 <p>{{'CONNTEST.HELP_STARTING_TEST' | translate}}</p>
