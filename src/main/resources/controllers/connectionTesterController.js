@@ -37,6 +37,16 @@ angular.module('guacConntest').controller('connectionTesterController', ['$scope
     var desiredConcurrency = $routeParams.n && parseInt($routeParams.n);
 
     /**
+     * Whether the connection test should be started automatically, once the
+     * interface and associated resources have finished loading, as specified
+     * by a non-zero value for the "auto" parameter in the URL. By default, the
+     * user will be prompted to start the test.
+     *
+     * @type Boolean
+     */
+    $scope.startAutomatically = !!$routeParams.auto;
+
+    /**
      * The current status of the connection test.
      *
      * @type Status
@@ -89,6 +99,19 @@ angular.module('guacConntest').controller('connectionTesterController', ['$scope
         connectionTestingService.startTest(desiredConcurrency);
     };
 
+    /**
+     * Returns whether the prompt for starting the connection test should be
+     * visible to the user. In general, the prompt should only be visible if
+     * the test has not started and will not be starting automatically.
+     *
+     * @returns {Boolean}
+     *     true if the connection test prompt should be displayed, false
+     *     otherwise.
+     */
+    $scope.isPromptVisible = function isPromptVisible() {
+        return !($scope.status.started || $scope.startAutomatically);
+    };
+
     // Display results when ready
     connectionTestingService.getResults().then(function testComplete(results) {
         $scope.results = results;
@@ -97,6 +120,12 @@ angular.module('guacConntest').controller('connectionTesterController', ['$scope
     // Update status as test continues
     ['finally'](null, function testProgress(status) {
         $scope.status = status;
+    });
+
+    // Automatically start the test if configured to do so
+    $scope.$on('$viewContentLoaded', function interfaceLoaded() {
+        if ($scope.startAutomatically)
+            $scope.startTest();
     });
 
 }]);
