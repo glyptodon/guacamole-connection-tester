@@ -106,4 +106,9 @@ public class ConnectionTestingAuthenticationProvider implements AuthenticationPr
         return injector.getInstance(RootResource.class);
     }
 
+    @Override
+    public void shutdown() {
+        // Nothing to clean up
+    }
+
 }
