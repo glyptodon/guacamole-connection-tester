@@ -318,6 +318,31 @@ angular.module('guacConntest').factory('connectionTestingService', ['$injector',
 
     };
 
+    /**
+     * Loads connection test results from the given opaque string originally
+     * returned by a call to Result.pack(). Status reporting, etc. of the
+     * connection test behaves identically to that of an actual test started
+     * via startTest() except that the results are made available immediately.
+     *
+     * @param {String} packed
+     *     The opaque string returned by a previous call to Result.pack() for
+     *     the connection test results to be restored.
+     */
+    service.restoreResults = function restoreResults(packed) {
+
+        // Do nothing if a test has already been started
+        if (currentResults)
+            return;
+
+        // Set results to unpacked contents of given packed results
+        configService.getServers().then(function receivedServerList(servers) {
+            currentResults = Result.unpack(servers, packed);
+            deferredResults.notify(service.getStatus());
+            deferredResults.resolve(currentResults);
+        });
+
+    };
+
     return service;
 
 }]);
