@@ -200,6 +200,7 @@
                         <exclude>**/*.json</exclude>
                         <exclude>src/licenses/**/*</exclude>
                         <exclude>src/main/resources/html/*.html</exclude>
+                        <exclude>src/main/resources/lib/pako.min.js</exclude>
                         <exclude>src/main/resources/templates/*.html</exclude>
                     </excludes>
                 </configuration>
