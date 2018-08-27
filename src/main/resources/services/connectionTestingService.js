@@ -35,25 +35,6 @@ angular.module('guacConntest').factory('connectionTestingService', ['$injector',
     var Status = $injector.get('Status');
 
     /**
-     * The number of bins to split servers into based on approximate subjective
-     * connection quality.
-     *
-     * @constant
-     * @type Number
-     */
-    var NICENESS_BINS = 4;
-
-    /**
-     * The subjectively-worst possible round trip time for a Guacamole
-     * connection while still being usable, in milliseconds. Connections that
-     * are worse than this value will be virtually unusable.
-     *
-     * @constant
-     * @type Number
-     */
-    var WORST_TOLERABLE_LATENCY = 220;
-
-    /**
      * The number of tests to run in parallel, if the concurrency level is not
      * overridden when calling startTest().
      *
@@ -105,37 +86,6 @@ angular.module('guacConntest').factory('connectionTestingService', ['$injector',
 
         // Return domain only if found
         return matches && matches[1];
-
-    };
-
-    /**
-     * Returns an arbitrary niceness value indicating how subjectively good a
-     * Guacamole connection is likely to be based on the given statistics,
-     * where zero is the best possible connection, and higher values represent
-     * progressively worse connections, with the worst possible value being
-     * NICENESS_BINS - 1.
-     *
-     * @param {Statistics} stats
-     *     The server round trip statistics to use to calculate the arbitrary
-     *     niceness value.
-     *
-     * @returns {Number}
-     *     An arbitrary niceness value indicating how subjectively good a
-     *     Guacamole connection is likely to be based on the given statistics,
-     *     where zero is the best possible connection, and higher values
-     *     represent progressively worse connections.
-     */
-    var getNiceness = function getNiceness(stats) {
-
-        // Remap expected round trip time to a logarithmic scale from 0 to 1,
-        // where 1 represents the worst tolerable latency for a Guacamole
-        // connection, taking inaccuracy into account
-        var logarithmicRTT = Math.log((stats.median + stats.medianAbsoluteDeviation) / WORST_TOLERABLE_LATENCY + 1) / Math.LN2;
-
-        // Map logarithmically-scaled RTT onto integer bins, where 0 is the
-        // subjectively best possible connection and higher values are
-        // subjectively worse
-        return Math.min(NICENESS_BINS - 1, Math.floor(logarithmicRTT * (NICENESS_BINS - 1)));
 
     };
 
@@ -204,13 +154,13 @@ angular.module('guacConntest').factory('connectionTestingService', ['$injector',
 
         // If successful, add server test result
         .then(function roundTripTimeMeasured(stats) {
-            result.niceness = getNiceness(stats);
+            result.niceness = Result.getNiceness(stats);
             result.roundTripStatistics = stats;
         })
 
         // Otherwise, mark server as bad
         ['catch'](function testRemainingServers() {
-            result.niceness = NICENESS_BINS;
+            result.niceness = Result.NICENESS_BINS;
         })
 
         // Test all remaining servers
