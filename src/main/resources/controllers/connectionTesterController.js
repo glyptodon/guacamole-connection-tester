@@ -24,8 +24,12 @@ angular.module('guacConntest').controller('connectionTesterController', ['$scope
     function connectionTesterController($scope, $injector) {
 
     // Required services
+    var $location                = $injector.get('$location');
     var $routeParams             = $injector.get('$routeParams');
     var connectionTestingService = $injector.get('connectionTestingService');
+
+    // Required types
+    var Result = $injector.get('Result');
 
     /**
      * The number of tests to run in parallel, as specified by the "n"
@@ -54,12 +58,28 @@ angular.module('guacConntest').controller('connectionTesterController', ['$scope
     $scope.status = connectionTestingService.getStatus();
 
     /**
+     * An opaque string containing the results of a previous test. This string
+     * will have been generated through a previous call to Result.pack().
+     *
+     * @type String
+     */
+    $scope.packedResults = $routeParams.r;
+
+    /**
      * The final results of the connection test, or null if the connection test
      * is not yet completed.
      *
      * @type Result[]
      */
     $scope.results = null;
+
+    /**
+     * A permanent, shareable link to the final results of the connection test,
+     * or null if the connection test is not yet completed.
+     *
+     * @type String
+     */
+    $scope.permalink = null;
 
     /**
      * Returns the place value (not index) of the server being tested relative
@@ -109,12 +129,13 @@ angular.module('guacConntest').controller('connectionTesterController', ['$scope
      *     otherwise.
      */
     $scope.isPromptVisible = function isPromptVisible() {
-        return !($scope.status.started || $scope.startAutomatically);
+        return !($scope.status.started || $scope.startAutomatically || $scope.packedResults);
     };
 
     // Display results when ready
     connectionTestingService.getResults().then(function testComplete(results) {
         $scope.results = results;
+        $scope.permalink = '#' + $location.path() + '?r=' + encodeURIComponent(Result.pack(results));
     })
 
     // Update status as test continues
@@ -122,10 +143,17 @@ angular.module('guacConntest').controller('connectionTesterController', ['$scope
         $scope.status = status;
     });
 
-    // Automatically start the test if configured to do so
     $scope.$on('$viewContentLoaded', function interfaceLoaded() {
-        if ($scope.startAutomatically)
+
+        // If packed results are given, load those immediately rather than
+        // perform a new test
+        if ($scope.packedResults)
+            connectionTestingService.restoreResults($scope.packedResults);
+
+        // Automatically start the test if configured to do so
+        else if ($scope.startAutomatically)
             $scope.startTest();
+
     });
 
 }]);

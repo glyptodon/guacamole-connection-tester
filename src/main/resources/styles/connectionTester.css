@@ -70,6 +70,12 @@
     transition:         width 0.0625s;
 }
 
+.connection-tester .connection-tester-report a.permalink {
+    display: block;
+    padding: 1em;
+    text-align: right;
+}
+
 .connection-tester .connection-tester-report .server-name img.flag-icon {
     box-sizing: content-box;
     max-width: 24px;

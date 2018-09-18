@@ -35,25 +35,6 @@ angular.module('guacConntest').factory('connectionTestingService', ['$injector',
     var Status = $injector.get('Status');
 
     /**
-     * The number of bins to split servers into based on approximate subjective
-     * connection quality.
-     *
-     * @constant
-     * @type Number
-     */
-    var NICENESS_BINS = 4;
-
-    /**
-     * The subjectively-worst possible round trip time for a Guacamole
-     * connection while still being usable, in milliseconds. Connections that
-     * are worse than this value will be virtually unusable.
-     *
-     * @constant
-     * @type Number
-     */
-    var WORST_TOLERABLE_LATENCY = 220;
-
-    /**
      * The number of tests to run in parallel, if the concurrency level is not
      * overridden when calling startTest().
      *
@@ -105,37 +86,6 @@ angular.module('guacConntest').factory('connectionTestingService', ['$injector',
 
         // Return domain only if found
         return matches && matches[1];
-
-    };
-
-    /**
-     * Returns an arbitrary niceness value indicating how subjectively good a
-     * Guacamole connection is likely to be based on the given statistics,
-     * where zero is the best possible connection, and higher values represent
-     * progressively worse connections, with the worst possible value being
-     * NICENESS_BINS - 1.
-     *
-     * @param {Statistics} stats
-     *     The server round trip statistics to use to calculate the arbitrary
-     *     niceness value.
-     *
-     * @returns {Number}
-     *     An arbitrary niceness value indicating how subjectively good a
-     *     Guacamole connection is likely to be based on the given statistics,
-     *     where zero is the best possible connection, and higher values
-     *     represent progressively worse connections.
-     */
-    var getNiceness = function getNiceness(stats) {
-
-        // Remap expected round trip time to a logarithmic scale from 0 to 1,
-        // where 1 represents the worst tolerable latency for a Guacamole
-        // connection, taking inaccuracy into account
-        var logarithmicRTT = Math.log((stats.median + stats.medianAbsoluteDeviation) / WORST_TOLERABLE_LATENCY + 1) / Math.LN2;
-
-        // Map logarithmically-scaled RTT onto integer bins, where 0 is the
-        // subjectively best possible connection and higher values are
-        // subjectively worse
-        return Math.min(NICENESS_BINS - 1, Math.floor(logarithmicRTT * (NICENESS_BINS - 1)));
 
     };
 
@@ -204,13 +154,13 @@ angular.module('guacConntest').factory('connectionTestingService', ['$injector',
 
         // If successful, add server test result
         .then(function roundTripTimeMeasured(stats) {
-            result.niceness = getNiceness(stats);
+            result.niceness = Result.getNiceness(stats);
             result.roundTripStatistics = stats;
         })
 
         // Otherwise, mark server as bad
         ['catch'](function testRemainingServers() {
-            result.niceness = NICENESS_BINS;
+            result.niceness = Result.NICENESS_BINS;
         })
 
         // Test all remaining servers
@@ -364,6 +314,31 @@ angular.module('guacConntest').factory('connectionTestingService', ['$injector',
             // Test all servers retrieved
             spawnTests(currentResults.slice(), concurrency || DEFAULT_CONCURRENCY);
 
+        });
+
+    };
+
+    /**
+     * Loads connection test results from the given opaque string originally
+     * returned by a call to Result.pack(). Status reporting, etc. of the
+     * connection test behaves identically to that of an actual test started
+     * via startTest() except that the results are made available immediately.
+     *
+     * @param {String} packed
+     *     The opaque string returned by a previous call to Result.pack() for
+     *     the connection test results to be restored.
+     */
+    service.restoreResults = function restoreResults(packed) {
+
+        // Do nothing if a test has already been started
+        if (currentResults)
+            return;
+
+        // Set results to unpacked contents of given packed results
+        configService.getServers().then(function receivedServerList(servers) {
+            currentResults = Result.unpack(servers, packed);
+            deferredResults.notify(service.getStatus());
+            deferredResults.resolve(currentResults);
         });
 
     };
