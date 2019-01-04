@@ -27,7 +27,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import org.apache.guacamole.conntest.conf.ConfigurationService;
+import org.apache.guacamole.conntest.conf.ServerList;
 
 /**
  * The root-level resource of the Guacamole connection testing extension.
@@ -36,10 +36,10 @@ import org.apache.guacamole.conntest.conf.ConfigurationService;
 public class RootResource {
 
     /**
-     * Service for retrieving configuration information.
+     * The list of all Guacamole servers to be tested by this extension.
      */
     @Inject
-    private ConfigurationService confService;
+    private ServerList serverList;
 
     /**
      * Returns the version of this extension, as declared within the project
@@ -94,7 +94,7 @@ public class RootResource {
     @GET
     @Path("servers")
     public Map<String, Server> getServerURLs() {
-        return confService.getServers();
+        return serverList.getValue();
     }
 
 }
