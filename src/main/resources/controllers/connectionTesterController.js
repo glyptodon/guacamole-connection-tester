@@ -158,7 +158,9 @@ angular.module('guacConntest').controller('connectionTesterController', ['$scope
         // conforming browsers
         var div = document.createElement('div');
         div.style.color = background;
+        document.body.appendChild(div);
         var computedColor = getComputedStyle(div).color;
+        document.body.removeChild(div);
 
         // Attempt to parse RGB components out of arbitrary CSS color
         var components = computedColor.match(/\brgb\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)/);
