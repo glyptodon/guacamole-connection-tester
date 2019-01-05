@@ -21,6 +21,7 @@ package org.apache.guacamole.conntest.conf;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.primitives.Ints;
+import com.google.inject.Singleton;
 import java.util.Map;
 import org.codehaus.jackson.type.TypeReference;
 import org.slf4j.Logger;
@@ -54,6 +55,7 @@ import org.slf4j.LoggerFactory;
  * of the thresholds will be used instead. If the custom thresholds have never
  * successfully been parsed, this will be the defaults.
  */
+@Singleton
 public class Thresholds extends CachedJSON<Map<String, String>> {
 
     /**

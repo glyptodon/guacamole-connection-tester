@@ -19,6 +19,7 @@
 
 package org.apache.guacamole.conntest.conf;
 
+import com.google.inject.Singleton;
 import java.util.Collections;
 import java.util.Map;
 import org.apache.guacamole.conntest.rest.Server;
@@ -31,6 +32,7 @@ import org.codehaus.jackson.type.TypeReference;
  * unique and human-readable name, and the value of each entry is an object
  * describing the server URL, location, etc.
  */
+@Singleton
 public class ServerList extends CachedJSON<Map<String, Server>> {
 
     /**
