@@ -180,10 +180,8 @@ angular.module('guacConntest').controller('connectionTesterController', ['$scope
             var luminance = 0.2126 * red + 0.7152 * green + 0.0722 * blue;
 
             // Consider the background to be dark if white text over that
-            // background would provide better contrast than black. This is the
-            // case if the luminance of the background color is 0.175 or less.
-            // See: https://ux.stackexchange.com/questions/107318/formula-for-color-contrast-between-text-and-background
-            if (luminance <= 0.175)
+            // background would provide better contrast than black
+            if (luminance <= 0.6)
                 return true;
 
         }
