@@ -112,7 +112,7 @@
  * Use white text if the background of a server result is relatively dark.
  */
 
-.connection-tester .connection-tester-report table.results tr.dark .server-result {
+.connection-tester .connection-tester-report table.results .server-result.dark {
     color: white;
 }
 
