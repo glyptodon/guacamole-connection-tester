@@ -109,43 +109,10 @@
 }
 
 /*
- * Server with excellent latency.
+ * Use white text if the background of a server result is relatively dark.
  */
 
-.connection-tester .connection-tester-report table.results tr.quality0 .server-result {
-    background: rgba(64, 192, 0, 0.5);
-}
-
-/*
- * Server with good latency.
- */
-
-.connection-tester .connection-tester-report table.results tr.quality1 .server-result {
-    background: rgba(192, 192, 0, 0.5);
-}
-
-/*
- * Server with poor (but tolerable) latency.
- */
-
-.connection-tester .connection-tester-report table.results tr.quality2 .server-result {
-    background: rgba(192, 128, 0, 0.5);
-}
-
-/*
- * Server with extremely poor latency.
- */
-
-.connection-tester .connection-tester-report table.results tr.quality3 .server-result {
-    background: rgba(192, 0, 0, 0.5);
-}
-
-/*
- * Completely unreachable server.
- */
-
-.connection-tester .connection-tester-report table.results tr.quality4 .server-result {
-    background: black;
+.connection-tester .connection-tester-report table.results tr.dark .server-result {
     color: white;
 }
 
@@ -159,12 +126,10 @@
 }
 
 /*
- * Highlight the best server if it has reasonable latency.
+ * Highlight the best server.
  */
 
-.connection-tester .connection-tester-report table.results tbody tr:first-child.quality0,
-.connection-tester .connection-tester-report table.results tbody tr:first-child.quality1,
-.connection-tester .connection-tester-report table.results tbody tr:first-child.quality2 {
+.connection-tester .connection-tester-report table.results tbody tr:first-child {
     font-weight: bold;
     border: 1px solid black;
 }

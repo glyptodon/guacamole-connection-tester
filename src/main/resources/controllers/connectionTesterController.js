@@ -132,6 +132,65 @@ angular.module('guacConntest').controller('connectionTesterController', ['$scope
         return !($scope.status.started || $scope.startAutomatically || $scope.packedResults);
     };
 
+    /**
+     * Returns whether the given CSS background color is relatively dark. A
+     * background color is considered dark if white text would be more visible
+     * over that background (provide better contrast) than black text. If the
+     * background color is not yet known, the background is assumed to be
+     * light.
+     *
+     * @param {String} background
+     *     The CSS background color to test, or null if the background color
+     *     is not currently known.
+     *
+     * @returns {Boolean}
+     *     true if the background is relatively dark (white text would provide
+     *     better contrast than black), false otherwise.
+     */
+    $scope.isDark = function isDark(background) {
+
+        // Assume light background if not yet known
+        if (!background)
+            return false;
+
+        // Canonicalize the given CSS color leveraging getComputedStyle(),
+        // which should represent all colors with "rgb(R, G, B)" in properly
+        // conforming browsers
+        var div = document.createElement('div');
+        div.style.color = background;
+        var computedColor = getComputedStyle(div).color;
+
+        // Attempt to parse RGB components out of arbitrary CSS color
+        var components = computedColor.match(/\brgb\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)/);
+
+        // If components were successfully extracted, determine dark vs. light
+        // by calculating luminance in the HSL space
+        if (components) {
+
+            // Extract color components as normalized float values
+            // between 0 and 1 inclusive
+            var red = components[1] / 255;
+            var green = components[2] / 255;
+            var blue = components[3] / 255;
+
+            // Convert RGB to luminance in HSL space (as defined by the
+            // relative luminance formula given by the W3C for accessibility)
+            var luminance = 0.2126 * red + 0.7152 * green + 0.0722 * blue;
+
+            // Consider the background to be dark if white text over that
+            // background would provide better contrast than black. This is the
+            // case if the luminance of the background color is 0.175 or less.
+            // See: https://ux.stackexchange.com/questions/107318/formula-for-color-contrast-between-text-and-background
+            if (luminance <= 0.175)
+                return true;
+
+        }
+
+        // Assume the background is light in all other cases
+        return false;
+
+    };
+
     // Display results when ready
     connectionTestingService.getResults().then(function testComplete(results) {
         $scope.results = results;
