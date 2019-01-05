@@ -51,7 +51,8 @@ angular.module('guacConntest').factory('configService', ['$injector',
         // Attempt to retrieve server list
         $http({
             method  : 'GET',
-            url     : 'api/ext/conntest/servers'
+            url     : 'api/ext/conntest/servers',
+            cache   : true
         })
 
         // If successful, resolve promise with map of servers
@@ -85,7 +86,8 @@ angular.module('guacConntest').factory('configService', ['$injector',
         // Attempt to retrieve test thresholds
         $http({
             method  : 'GET',
-            url     : 'api/ext/conntest/thresholds'
+            url     : 'api/ext/conntest/thresholds',
+            cache   : true
         })
 
         // If successful, resolve promise with map of thresholds
