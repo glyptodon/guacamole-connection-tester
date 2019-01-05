@@ -154,16 +154,16 @@ angular.module('guacConntest').controller('connectionTesterController', ['$scope
             return false;
 
         // Canonicalize the given CSS color leveraging getComputedStyle(),
-        // which should represent all colors with "rgb(R, G, B)" in properly
-        // conforming browsers
+        // which should represent all colors with "rgb(R, G, B)" or
+        // "rgba(R, G, B, A)" in properly conforming browsers
         var div = document.createElement('div');
         div.style.color = background;
         document.body.appendChild(div);
         var computedColor = getComputedStyle(div).color;
         document.body.removeChild(div);
 
-        // Attempt to parse RGB components out of arbitrary CSS color
-        var components = computedColor.match(/\brgb\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)/);
+        // Attempt to parse RGBA components out of arbitrary CSS color
+        var components = computedColor.match(/\brgb(?:a)?\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(?:,\s*((?:\d*\.)?\d+)\s*)?\)/);
 
         // If components were successfully extracted, determine dark vs. light
         // by calculating luminance in the HSL space
@@ -174,6 +174,12 @@ angular.module('guacConntest').controller('connectionTesterController', ['$scope
             var red = parseInt(components[1]) / 255;
             var green = parseInt(components[2]) / 255;
             var blue = parseInt(components[3]) / 255;
+            var alpha = parseFloat(components[4] || '1');
+
+            // Mix RGB assuming white background
+            red = (1 - alpha) + red * alpha;
+            green = (1 - alpha) + green * alpha;
+            blue = (1 - alpha) + blue * alpha;
 
             // Convert RGB to luminance in HSL space (as defined by the
             // relative luminance formula given by the W3C for accessibility)
