@@ -28,6 +28,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.apache.guacamole.conntest.conf.ServerList;
+import org.apache.guacamole.conntest.conf.Thresholds;
 
 /**
  * The root-level resource of the Guacamole connection testing extension.
@@ -40,6 +41,13 @@ public class RootResource {
      */
     @Inject
     private ServerList serverList;
+
+    /**
+     * The overall set of latency thresholds and associated CSS colors that
+     * should be used to classify Guacamole servers by subjective quality.
+     */
+    @Inject
+    private Thresholds thresholds;
 
     /**
      * Returns the version of this extension, as declared within the project
@@ -95,6 +103,27 @@ public class RootResource {
     @Path("servers")
     public Map<String, Server> getServerURLs() {
         return serverList.getValue();
+    }
+
+    /**
+     * Returns a map of latency thresholds, where the key of each entry is the
+     * minimum integer number of milliseconds that a latency value must have
+     * to be classified within that threshold, with the exception of a single
+     * entry having the key "unreachable" which is used for servers that cannot
+     * be reached at all. The upper bound of each threshold is dictated by the
+     * presence of larger keys within the map. The value of each entry is the
+     * CSS color that should be used to graphically represent servers classified
+     * within that threshold.
+     *
+     * @return
+     *     A map of latency thresholds to the corresponding CSS colors that
+     *     should be used to represent servers classified within those
+     *     thresholds.
+     */
+    @GET
+    @Path("thresholds")
+    public Map<String, String> getThresholds() {
+        return thresholds.getValue();
     }
 
 }
