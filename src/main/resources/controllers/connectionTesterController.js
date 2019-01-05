@@ -171,9 +171,9 @@ angular.module('guacConntest').controller('connectionTesterController', ['$scope
 
             // Extract color components as normalized float values
             // between 0 and 1 inclusive
-            var red = components[1] / 255;
-            var green = components[2] / 255;
-            var blue = components[3] / 255;
+            var red = parseInt(components[1]) / 255;
+            var green = parseInt(components[2]) / 255;
+            var blue = parseInt(components[3]) / 255;
 
             // Convert RGB to luminance in HSL space (as defined by the
             // relative luminance formula given by the W3C for accessibility)
