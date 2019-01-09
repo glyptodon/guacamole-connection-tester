@@ -84,6 +84,39 @@ changes will not be loaded, errors will be logged to the Tomcat logs, and
 guacamole-connection-tester will continue using the data from the previous
 version of `guacamole-server-list.json`.
 
+### Custom latency thresholds/colors
+
+By default, guacamole-connection-tester will classify servers against a rough
+logarithmic scale of latencies, assigning background colors to the table of
+test results based on how subjectively good a particular server is performing.
+These defaults can be overridden by providing a file called
+`connection-test-thresholds.json` within `GUACAMOLE_HOME`.
+
+The `connection-test-thresholds.json` file should contain a single object,
+where each key is a decimal integer value representing the minimum latency that
+should be associated with that threshold, and each value is the CSS color that
+should be assigned to a server having that latency. There must also be a single
+key called `unreachable` which will be used to represent servers that cannot be
+reached at all.
+
+For example, the JSON representation of the default thresholds (which apply if
+`connection-test-thresholds.json` is not present) would be:
+
+    {
+
+        "0"   : "rgba(64,  192, 0, 0.5)",
+        "60"  : "rgba(192, 192, 0, 0.5)",
+        "130" : "rgba(192, 128, 0, 0.5)",
+        "220" : "rgba(192, 0,   0, 0.5)",
+
+        "unreachable" : "black"
+
+    }
+
+Note that the `connection-test-thresholds.json` file **MUST** define at least
+the `0` and `unreachable` thresholds. If either of these definitions are
+missing, the custom thresholds will not be used, and a warning will be logged.
+
 Testing servers without the extension
 -------------------------------------
 

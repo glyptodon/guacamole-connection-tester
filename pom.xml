@@ -26,7 +26,7 @@
     <groupId>org.apache.guacamole</groupId>
     <artifactId>guacamole-connection-tester</artifactId>
     <packaging>jar</packaging>
-    <version>0.9.14</version>
+    <version>1.0.0</version>
     <name>guacamole-connection-tester</name>
     <url>http://guacamole.incubator.apache.org/</url>
 
@@ -227,7 +227,7 @@
         <dependency>
             <groupId>org.apache.guacamole</groupId>
             <artifactId>guacamole-ext</artifactId>
-            <version>0.9.14</version>
+            <version>1.0.0</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
@@ -270,6 +270,13 @@
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>jackson-mapper-asl</artifactId>
             <version>1.9.2</version>
+        </dependency>
+
+        <!-- Guava - Utility Library -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>19.0</version>
         </dependency>
 
     </dependencies>

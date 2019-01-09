@@ -127,11 +127,15 @@ angular.module('guacConntest').factory('connectionTestingService', ['$injector',
      *     An array of incomplete results to populate. This array will be
      *     gradually emptied by this function as tests are performed.
      *
+     * @param {Thresholds} thresholds
+     *     The set of latency thresholds which should be used to classify/group
+     *     servers their subjective quality.
+     *
      * @param {Number} concurrency
      *     The desired number of concurrent tests. If the number of active
      *     tests falls below this value, additional tests will be started.
      */
-    var testServers = function testServers(results, concurrency) {
+    var testServers = function testServers(results, thresholds, concurrency) {
 
         // Pull next result from array
         var result = results.shift();
@@ -154,17 +158,20 @@ angular.module('guacConntest').factory('connectionTestingService', ['$injector',
 
         // If successful, add server test result
         .then(function roundTripTimeMeasured(stats) {
-            result.niceness = Result.getNiceness(stats);
             result.roundTripStatistics = stats;
         })
 
         // Otherwise, mark server as bad
-        ['catch'](function testRemainingServers() {
-            result.niceness = Result.NICENESS_BINS;
+        ['catch'](function serverUnreachable() {
+            result.roundTripStatistics = null;
         })
 
         // Test all remaining servers
         ['finally'](function testRemainingServers() {
+
+            // Assign niceness/color based on latency statistics, if any
+            result.niceness = thresholds.getNiceness(result.roundTripStatistics);
+            result.color = thresholds.getColor(result.niceness);
 
             // Mark test as complete
             delete activeTests[domain];
@@ -178,7 +185,7 @@ angular.module('guacConntest').factory('connectionTestingService', ['$injector',
                 deferredResults.resolve(currentResults);
 
             // Spawn tests for remaining servers
-            spawnTests(results, concurrency);
+            spawnTests(results, thresholds, concurrency);
 
         });
 
@@ -197,11 +204,15 @@ angular.module('guacConntest').factory('connectionTestingService', ['$injector',
      *     An array of incomplete results to populate. This array will be
      *     gradually emptied as tests are performed.
      *
+     * @param {Thresholds} thresholds
+     *     The set of latency thresholds which should be used to classify/group
+     *     servers their subjective quality.
+     *
      * @param {Number} concurrency
      *     The desired number of concurrent tests. If the number of active
      *     tests falls below this value, additional tests will be started.
      */
-    var spawnTests = function spawnTests(results, concurrency) {
+    var spawnTests = function spawnTests(results, thresholds, concurrency) {
 
         // Count the number of tests currently running
         var spawnCount = concurrency;
@@ -211,7 +222,7 @@ angular.module('guacConntest').factory('connectionTestingService', ['$injector',
 
         // Start as many tests as allowed
         for (var i = 0; i < spawnCount; i++)
-            testServers(results, concurrency);
+            testServers(results, thresholds, concurrency);
 
     };
 
@@ -293,15 +304,17 @@ angular.module('guacConntest').factory('connectionTestingService', ['$injector',
         if (currentResults)
             return;
 
-        // Test all servers once the server map has been retrieved
-        configService.getServers()
-        .then(function receivedServerList(servers) {
+        // Test all servers once all configuration information has been retrieved
+        $q.all({
+            'servers' : configService.getServers(),
+            'thresholds' : configService.getThresholds()
+        }).then(function receivedServerList(values) {
 
             // Reset any past results
             currentResults = [];
 
             // Create skeleton test results for all servers
-            angular.forEach(servers, function createPendingResult(server, name) {
+            angular.forEach(values.servers, function createPendingResult(server, name) {
                 currentResults.push(new Result({
                     'name'   : name,
                     'server' : server
@@ -312,7 +325,8 @@ angular.module('guacConntest').factory('connectionTestingService', ['$injector',
             deferredResults.notify(service.getStatus());
 
             // Test all servers retrieved
-            spawnTests(currentResults.slice(), concurrency || DEFAULT_CONCURRENCY);
+            spawnTests(currentResults.slice(), values.thresholds,
+                concurrency || DEFAULT_CONCURRENCY);
 
         });
 
@@ -335,8 +349,11 @@ angular.module('guacConntest').factory('connectionTestingService', ['$injector',
             return;
 
         // Set results to unpacked contents of given packed results
-        configService.getServers().then(function receivedServerList(servers) {
-            currentResults = Result.unpack(servers, packed);
+        $q.all({
+            'servers' : configService.getServers(),
+            'thresholds' : configService.getThresholds()
+        }).then(function receivedServerList(values) {
+            currentResults = Result.unpack(values.servers, values.thresholds, packed);
             deferredResults.notify(service.getStatus());
             deferredResults.resolve(currentResults);
         });

@@ -14,12 +14,7 @@
             </thead>
             <tbody>
                 <tr ng-class="{
-                        'pending'  : !result.complete,
-                        'quality0' : result.niceness === 0,
-                        'quality1' : result.niceness === 1,
-                        'quality2' : result.niceness === 2,
-                        'quality3' : result.niceness === 3,
-                        'quality4' : result.niceness === 4
+                        'pending' : !result.complete
                     }"
                     ng-repeat="result in results | orderBy: [
                         'niceness',
@@ -35,7 +30,14 @@
                     </td>
                     <td class="server-url"><a ng-href="{{result.server.url}}"
                                               target="_self">{{result.server.url}}</a></td>
-                    <td class="server-result">
+                    <td class="server-result"
+                        ng-class="{
+                            'dark' : isDark(result.color)
+                        }"
+                        ng-style="{
+                            'background-color' : result.color,
+                            'color' : getTextColor(result.color)
+                        }">
 
                         <!-- Final result statistics, available only when result is complete -->
                         <span ng-show="result.complete">

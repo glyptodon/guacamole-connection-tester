@@ -24,6 +24,9 @@
 angular.module('guacConntest').factory('configService', ['$injector',
         function configService($injector) {
 
+    // Required types
+    var Thresholds = $injector.get('Thresholds');
+
     // Required services
     var $http = $injector.get('$http');
     var $q    = $injector.get('$q');
@@ -48,7 +51,8 @@ angular.module('guacConntest').factory('configService', ['$injector',
         // Attempt to retrieve server list
         $http({
             method  : 'GET',
-            url     : 'api/ext/conntest/servers'
+            url     : 'api/ext/conntest/servers',
+            cache   : true
         })
 
         // If successful, resolve promise with map of servers
@@ -59,6 +63,41 @@ angular.module('guacConntest').factory('configService', ['$injector',
         // If unsuccessful, resolve with empty map
         ['catch'](function serverListRetrievalFailed() {
             request.resolve({});
+        });
+
+        return request.promise;
+
+    };
+
+    /**
+     * Makes a request to the REST API to get the list of thresholds to be used
+     * to classify Guacamole servers by their latency measurements, returning a
+     * promise that provides a @link{Thresholds} object if successful.
+     *
+     * @returns {Promise.<Thresholds>}
+     *     A promise which will resolve with a @link{Thresholds} object
+     *     representing the overall list of thresholds that should be used to
+     *     classify Guacamole servers by their latency measurements.
+     */
+    service.getThresholds = function getThresholds() {
+
+        var request = $q.defer();
+
+        // Attempt to retrieve test thresholds
+        $http({
+            method  : 'GET',
+            url     : 'api/ext/conntest/thresholds',
+            cache   : true
+        })
+
+        // If successful, resolve promise with map of thresholds
+        .then(function thresholdRetrievalSucceeded(response) {
+            request.resolve(new Thresholds(response.data));
+        })
+
+        // If unsuccessful, resolve with failsafe defaults
+        ['catch'](function thresholdRetrievalFailed() {
+            request.resolve(Thresholds.DEFAULT_THRESHOLDS);
         });
 
         return request.promise;

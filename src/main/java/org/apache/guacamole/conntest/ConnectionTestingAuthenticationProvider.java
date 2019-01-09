@@ -23,10 +23,7 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.conntest.rest.RootResource;
-import org.apache.guacamole.net.auth.AuthenticatedUser;
-import org.apache.guacamole.net.auth.AuthenticationProvider;
-import org.apache.guacamole.net.auth.Credentials;
-import org.apache.guacamole.net.auth.UserContext;
+import org.apache.guacamole.net.auth.AbstractAuthenticationProvider;
 
 /**
  * AuthenticationProvider which exposes REST services for testing the
@@ -34,7 +31,7 @@ import org.apache.guacamole.net.auth.UserContext;
  * does not perform any authentication, but rather exposes the results of
  * testing in a dynamically-generated report visible to anyone.
  */
-public class ConnectionTestingAuthenticationProvider implements AuthenticationProvider {
+public class ConnectionTestingAuthenticationProvider extends AbstractAuthenticationProvider {
 
     /**
      * Injector which will manage the object graph of this authentication
@@ -65,50 +62,8 @@ public class ConnectionTestingAuthenticationProvider implements AuthenticationPr
     }
 
     @Override
-    public AuthenticatedUser authenticateUser(Credentials credentials)
-            throws GuacamoleException {
-
-        // This extension does not perform authentication
-        return null;
-
-    }
-
-    @Override
-    public AuthenticatedUser updateAuthenticatedUser(AuthenticatedUser authenticatedUser,
-            Credentials credentials) throws GuacamoleException {
-
-        // This extension does not perform authentication
-        return authenticatedUser;
-
-    }
-
-    @Override
-    public UserContext getUserContext(AuthenticatedUser authenticatedUser)
-            throws GuacamoleException {
-
-        // This extension does not perform authentication
-        return null;
-
-    }
-
-    @Override
-    public UserContext updateUserContext(UserContext context,
-            AuthenticatedUser authenticatedUser, Credentials credentials)
-                throws GuacamoleException {
-
-        // This extension does not perform authentication
-        return context;
-
-    }
-
-    @Override
     public Object getResource() throws GuacamoleException {
         return injector.getInstance(RootResource.class);
-    }
-
-    @Override
-    public void shutdown() {
-        // Nothing to clean up
     }
 
 }
