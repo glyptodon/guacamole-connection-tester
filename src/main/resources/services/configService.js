@@ -72,9 +72,9 @@ angular.module('guacConntest').factory('configService', ['$injector',
     /**
      * Makes a request to the REST API to get the list of thresholds to be used
      * to classify Guacamole servers by their latency measurements, returning a
-     * promise that provides a @link{Thresolds} object if successful.
+     * promise that provides a @link{Thresholds} object if successful.
      *
-     * @returns {Promise.<Threasholds>}
+     * @returns {Promise.<Thresholds>}
      *     A promise which will resolve with a @link{Thresholds} object
      *     representing the overall list of thresholds that should be used to
      *     classify Guacamole servers by their latency measurements.
