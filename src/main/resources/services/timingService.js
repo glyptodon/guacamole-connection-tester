@@ -67,6 +67,10 @@ angular.module('guacConntest').factory('timingService', ['$injector',
         // Ping the Guacamole server's timestamp service
         $http({
             method  : 'GET',
+            headers : {
+                'Cache-Control' : undefined,
+                'Pragma'        : undefined
+            },
             url     : serverUrl + 'api/ext/conntest/time',
             timeout : timeout,
             params  : { 'timestamp' : timestamp }

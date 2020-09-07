@@ -26,7 +26,7 @@
     <groupId>org.apache.guacamole</groupId>
     <artifactId>guacamole-connection-tester</artifactId>
     <packaging>jar</packaging>
-    <version>1.0.0</version>
+    <version>1.0.0-2</version>
     <name>guacamole-connection-tester</name>
     <url>http://guacamole.incubator.apache.org/</url>
 
